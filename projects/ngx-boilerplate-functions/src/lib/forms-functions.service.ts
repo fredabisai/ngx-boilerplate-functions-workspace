@@ -31,5 +31,23 @@ export class FormsFunctionsService {
       }
     }
   }
+  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: {name: string, value: any}[] = [], fieldsToRemove: string[] = [] ): any {
+    let payload = form?.value;
+    if(payload) {
+      if(fieldsToAdd?.length) {
+        for(const itemToAdd of fieldsToAdd) {
+          payload = itemToAdd ? {...payload, [itemToAdd?.name]: itemToAdd?.value } : payload;
+        }
+      }
+      if(fieldsToRemove?.length) {
+        for(const itemToRemove of fieldsToRemove) {
+          if(payload?.hasOwnProperty(itemToRemove)) {
+            delete payload[itemToRemove];
+          }
+        }
+      }
+    }
+    return payload;
+  }
 
 }
