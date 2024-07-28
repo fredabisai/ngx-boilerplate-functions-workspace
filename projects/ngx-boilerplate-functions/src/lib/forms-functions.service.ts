@@ -62,5 +62,14 @@ export class FormsFunctionsService {
       }
     }
   }
+  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: {name: string, value: any}[]) {
+    if (form && fieldsToSet?.length) {
+      for (const field of fieldsToSet) {
+        if (field?.name && form?.contains(field.name)) {
+          form.get(field.name)?.patchValue(field?.value ?? null)
+        }
+      }
+    }
+  }
 
 }
