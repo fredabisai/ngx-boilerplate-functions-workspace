@@ -49,5 +49,18 @@ export class FormsFunctionsService {
     }
     return payload;
   }
+  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: {name: string, options?: { onlySelf?: boolean; emitEvent?: boolean;}}[]): void {
+    if(fieldsToDisable?.length) {
+      for(const field of fieldsToDisable) {
+        if(field?.name && form?.contains(field.name) ) {
+          if(field?.options) {
+            form.controls[field].disable(field.options)
+          } else {
+            form.controls[field].disable();
+          }
+        }
+      }
+    }
+  }
 
 }
