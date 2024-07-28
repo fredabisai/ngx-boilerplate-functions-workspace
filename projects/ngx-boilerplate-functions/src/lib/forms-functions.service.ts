@@ -72,4 +72,27 @@ export class FormsFunctionsService {
     }
   }
 
+  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: {name: string, value?: any,  validations?: ValidatorFn[]}[],
+                          fieldsToRemove: {name: string, emitEvent?: boolean}[]): void {
+    if(fieldsToAdd?.length) {
+      for(const field of fieldsToAdd) {
+        if (field?.name && !form?.contains(field.name)) {
+          if (this.majorVersion >= 14) {
+
+              form.addControl(field.name, new UntypedFormGroup(field?.value ?? null, field?.validations?.length ? field.validations : []));
+          } else {
+            form.addControl(field.name, new FormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
+          }
+        }
+      }
+    }
+    if(fieldsToRemove?.length) {
+      for(const field of fieldsToRemove) {
+        if (field?.name && form?.contains(field.name)) {
+          form.removeControl(field.name, {emitEvent: !!field?.emitEvent})
+        }
+      }
+    }
+  }
+
 }
