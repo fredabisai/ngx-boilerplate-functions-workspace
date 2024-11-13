@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
-import {FormControl, FormGroup, UntypedFormGroup, ValidatorFn} from "@angular/forms";
+import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, ValidatorFn} from "@angular/forms";
 import {VERSION} from "@angular/cli";
+import {NgxBoilerplateFunctionsUtils} from "./ngx-boilerplate-functions-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +63,7 @@ export class FormsFunctionsService {
       }
     }
   }
-  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: {name: string, value: any}[]) {
+  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: {name: string, value: any}[]): void {
     if (form && fieldsToSet?.length) {
       for (const field of fieldsToSet) {
         if (field?.name && form?.contains(field.name)) {
@@ -74,25 +75,40 @@ export class FormsFunctionsService {
 
   changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: {name: string, value?: any,  validations?: ValidatorFn[]}[],
                           fieldsToRemove: {name: string, emitEvent?: boolean}[]): void {
-    if(fieldsToAdd?.length) {
-      for(const field of fieldsToAdd) {
+    if (fieldsToAdd?.length) {
+      for (const field of fieldsToAdd) {
         if (field?.name && !form?.contains(field.name)) {
-          if (this.majorVersion >= 14) {
-
-              form.addControl(field.name, new UntypedFormGroup(field?.value ?? null, field?.validations?.length ? field.validations : []));
-          } else {
+          if (NgxBoilerplateFunctionsUtils.isUntypedFormGroup(form)) {
+            form.addControl(field.name, new UntypedFormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
+          }
+          if (NgxBoilerplateFunctionsUtils.isFormGroup(form)) {
             form.addControl(field.name, new FormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
           }
         }
       }
-    }
-    if(fieldsToRemove?.length) {
-      for(const field of fieldsToRemove) {
-        if (field?.name && form?.contains(field.name)) {
-          form.removeControl(field.name, {emitEvent: !!field?.emitEvent})
+      if (fieldsToRemove?.length) {
+        for (const field of fieldsToRemove) {
+          if (field?.name && form?.contains(field.name)) {
+            form.removeControl(field.name, {emitEvent: !!field?.emitEvent})
+          }
         }
       }
     }
   }
 
-}
+    checkIfTextsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string, matchingControlName: string): void {
+        const control = formGroup.controls[controlName];
+        const matchingControl = formGroup.controls[matchingControlName];
+
+        if (matchingControl.errors && !matchingControl.errors.mustMatch) {
+          return;
+        }
+
+        // set error on matchingControl if validation fails
+        if (control.value !== matchingControl.value) {
+          matchingControl.setErrors({ mustMatch: true });
+        } else {
+          matchingControl.setErrors(null);
+        }
+      }
+  }
