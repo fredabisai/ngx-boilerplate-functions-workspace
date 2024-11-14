@@ -5,7 +5,7 @@ import {
   FormGroup,
   UntypedFormBuilder,
   UntypedFormControl,
-  UntypedFormGroup,
+  UntypedFormGroup, ValidationErrors,
   ValidatorFn
 } from "@angular/forms";
 import {VERSION} from "@angular/cli";
@@ -158,7 +158,24 @@ export class FormsFunctionsService {
             return control.getError(errorType);
           }
       }
-      isFormValid(forGroup: FormGroup | UntypedFormGroup): boolean {
+      isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean {
+           if(!control || !controlMarks?.length) {
+             return false;
+           }
+           controlMarks = [...new Set(controlMarks)];
+           control?.invalid && controlMarks.every(mark => controlMarks[mark]);
+      }
+      isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean {
          return <boolean>forGroup?.valid;
+      }
+      getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | undefined {
+        const errors: {key: string[]} | undefined = undefined;
+        Object.keys(forGroup.controls).forEach(key => {
+          const controlErrors: ValidationErrors | null | undefined = forGroup.get(key)?.errors;
+          if (controlErrors) {
+            errors[key] = controlErrors;
+          }
+        });
+        return errors;
       }
   }
