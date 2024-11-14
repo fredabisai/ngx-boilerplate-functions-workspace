@@ -158,4 +158,7 @@ export class FormsFunctionsService {
             return control.getError(errorType);
           }
       }
+      isFormValid(forGroup: FormGroup | UntypedFormGroup): boolean {
+         return <boolean>forGroup?.valid;
+      }
   }
