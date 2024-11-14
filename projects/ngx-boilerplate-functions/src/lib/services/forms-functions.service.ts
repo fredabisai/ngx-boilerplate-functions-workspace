@@ -1,7 +1,8 @@
 import {Injectable} from "@angular/core";
 import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, ValidatorFn} from "@angular/forms";
 import {VERSION} from "@angular/cli";
-import {NgxBoilerplateFunctionsUtils} from "./ngx-boilerplate-functions-utils";
+import {PackageUtils} from "../utils/package.utils";
+import {FormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class FormsFunctionsService {
   private majorVersion = parseInt(VERSION.major, 10);
 
   constructor() { }
-  setFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: {name: string, validations: ValidatorFn[]}[]): void {
+  setFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if ( field?.name &&  form?.contains(field.name) && field?.validations?.length) {
@@ -20,7 +21,7 @@ export class FormsFunctionsService {
       }
     }
   }
-  removeFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: {name: string, defaultValue?: any}[]): void {
+  removeFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if (field?.name &&  form?.contains(field.name)) {
@@ -32,7 +33,7 @@ export class FormsFunctionsService {
       }
     }
   }
-  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: {name: string, value: any}[] = [], fieldsToRemove: string[] = [] ): any {
+  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: FormFieldInfo[] = [], fieldsToRemove: string[] = [] ): any {
     let payload = form?.value;
     if(payload) {
       if(fieldsToAdd?.length) {
@@ -50,7 +51,7 @@ export class FormsFunctionsService {
     }
     return payload;
   }
-  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: {name: string, options?: { onlySelf?: boolean; emitEvent?: boolean;}}[]): void {
+  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: FormFieldInfo[]): void {
     if(fieldsToDisable?.length) {
       for(const field of fieldsToDisable) {
         if(field?.name && form?.contains(field.name) ) {
@@ -63,7 +64,7 @@ export class FormsFunctionsService {
       }
     }
   }
-  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: {name: string, value: any}[]): void {
+  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: FormFieldInfo[]): void {
     if (form && fieldsToSet?.length) {
       for (const field of fieldsToSet) {
         if (field?.name && form?.contains(field.name)) {
@@ -73,15 +74,15 @@ export class FormsFunctionsService {
     }
   }
 
-  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: {name: string, value?: any,  validations?: ValidatorFn[]}[],
+  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: FormFieldInfo[],
                           fieldsToRemove: {name: string, emitEvent?: boolean}[]): void {
     if (fieldsToAdd?.length) {
       for (const field of fieldsToAdd) {
         if (field?.name && !form?.contains(field.name)) {
-          if (NgxBoilerplateFunctionsUtils.isUntypedFormGroup(form)) {
+          if (PackageUtils.isUntypedFormGroup(form)) {
             form.addControl(field.name, new UntypedFormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
           }
-          if (NgxBoilerplateFunctionsUtils.isFormGroup(form)) {
+          if (PackageUtils.isFormGroup(form)) {
             form.addControl(field.name, new FormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
           }
         }
