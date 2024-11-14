@@ -24,5 +24,17 @@ export class PackageUtils {
     }
     return obj;
   }
+  static convertToString(obj: any, name: string): any {
+    if(obj?.hasOwnProperty(name)) {
+      if (typeof obj[name] === 'string') {
+        obj[name] = obj[name];
+      } else if (typeof obj[name] === 'object') {
+        obj = {...obj, [name]: JSON.stringify(obj[name])};
+      } else {
+        obj = {...obj, [name]: `${obj[name]}`};
+      }
+    }
+    return obj;
+  }
 
 }
