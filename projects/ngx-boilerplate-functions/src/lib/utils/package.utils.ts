@@ -58,5 +58,17 @@ export class PackageUtils {
     }
     return obj;
   }
+  static convertToBoolean(obj: any, name: string) {
+    if(obj?.hasOwnProperty(name) && name) {
+      if(typeof obj[name] === 'boolean') {
+        obj = {...obj, [name]: obj[name]};
+      } else if(obj[name]) {
+        obj = {...obj, [name]: true};
+      } else {
+        obj = {...obj, [name]: false};
+      }
+    }
+    return obj;
+  }
 
 }
