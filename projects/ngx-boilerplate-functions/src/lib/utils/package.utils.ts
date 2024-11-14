@@ -46,5 +46,11 @@ export class PackageUtils {
       throw new Error(`Unable to format date format :: ${e?.message}`);
     }
   }
+  static convertToNumber(obj: any, name: string) {
+    if(obj?.hasOwnProperty(name) && name && /\d/.test(obj[name])) {
+      obj = {...obj, [name]: parseInt(obj[name], 10)};
+    }
+    return obj;
+  }
 
 }
