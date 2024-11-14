@@ -1,6 +1,6 @@
 import {FormGroup, UntypedFormGroup} from "@angular/forms";
 
-export class NgxBoilerplateFunctionsUtils {
+export class PackageUtils {
   static isFormGroup(obj: any): obj is FormGroup {
     return obj instanceof FormGroup;
   }
