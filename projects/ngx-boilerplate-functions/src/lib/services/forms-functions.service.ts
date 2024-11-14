@@ -149,4 +149,13 @@ export class FormsFunctionsService {
            }
            formGroup.reset(defaultValuesToReset);
       }
+      getFormControlErrorMessage(control: FormControl | UntypedFormControl,
+                          errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength' | 'pattern' | 'min' | 'max' | 'email'): any {
+          if(!control) {
+            return undefined;
+          }
+          if(control?.hasError(errorType)) {
+            return control.getError(errorType);
+          }
+      }
   }
