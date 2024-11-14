@@ -52,5 +52,11 @@ export class PackageUtils {
     }
     return obj;
   }
+  static convertToFloat(obj: any, name: string) {
+    if(obj?.hasOwnProperty(name) && name && /\d/.test(obj[name])) {
+      obj = {...obj, [name]: parseFloat(obj[name])};
+    }
+    return obj;
+  }
 
 }
