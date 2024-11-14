@@ -1,5 +1,13 @@
 import {Injectable} from "@angular/core";
-import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, ValidatorFn} from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  ValidatorFn
+} from "@angular/forms";
 import {VERSION} from "@angular/cli";
 import {PackageUtils} from "../utils/package.utils";
 import {FormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
@@ -111,5 +119,24 @@ export class FormsFunctionsService {
         } else {
           matchingControl.setErrors(null);
         }
+      }
+
+      initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: FormFieldInfo[]): FormGroup | undefined {
+            const formGroup = formBuilder.group({});
+            if(!fields?.length) {
+              return formGroup;
+            }
+            for (const field of fields) {
+               if(PackageUtils.isFormBuilder(formBuilder)) {
+                 formGroup.addControl(field.name, new FormControl(field?.value ?? field?.defaultValue ?? null));
+               }
+               if(PackageUtils.isUntypedFormBuilder(formBuilder)) {
+                 formGroup.addControl(field.name, new UntypedFormControl(field?.value ?? field?.defaultValue ?? null));
+               }
+            }
+            return formGroup;
+      }
+      resetFormGroup(formGroup: FormGroup, fieldsToAdd: FormFieldInfo[]): void {
+
       }
   }
