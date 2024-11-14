@@ -36,5 +36,15 @@ export class PackageUtils {
     }
     return obj;
   }
+  static formatDate(obj: any, name: string | undefined, format: string | undefined): any {
+    try {
+      if (obj?.hasOwnProperty(name) && name && format) {
+        obj = {...obj, [name]: this.datePipe.transform(obj[name], format)};
+      }
+      return obj;
+    } catch (e) {
+      throw new Error(`Unable to format date format :: ${e?.message}`);
+    }
+  }
 
 }
