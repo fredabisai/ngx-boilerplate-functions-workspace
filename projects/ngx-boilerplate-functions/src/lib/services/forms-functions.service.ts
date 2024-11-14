@@ -136,7 +136,17 @@ export class FormsFunctionsService {
             }
             return formGroup;
       }
-      resetFormGroup(formGroup: FormGroup, fieldsToAdd: FormFieldInfo[]): void {
-
+      resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: FormFieldInfo[]): void {
+           if(!defaultFields?.length) {
+              formGroup.reset();
+              return;
+           }
+           let defaultValuesToReset: any = {};
+           for (const field of defaultFields) {
+             if(!defaultValuesToReset.hasOwnProperty(field.name)) {
+               defaultValuesToReset = {...defaultValuesToReset, [field.name]: field?.value ?? null};
+             }
+           }
+           formGroup.reset(defaultValuesToReset);
       }
   }
