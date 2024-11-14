@@ -18,7 +18,6 @@ import {FormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
 export class FormsFunctionsService {
   private majorVersion = parseInt(VERSION.major, 10);
 
-  constructor() { }
   setFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
@@ -178,4 +177,35 @@ export class FormsFunctionsService {
         });
         return errors;
       }
+      getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormFieldInfo[]) {
+          if(!fieldsToFormat?.length) {
+            return formGroup?.value;
+          }
+          let valueObj: any = formGroup?.value;
+          if(!valueObj) {
+            return undefined;
+          }
+          for (const field of fieldsToFormat) {
+            if(field?.formatType === 'remove') {
+              valueObj = PackageUtils.removeKeyFromObject(valueObj, field.name)
+            }
+            if(field?.formatType === 'string') {
+              valueObj = PackageUtils.convertToString(valueObj, field.name)
+            }
+            if(field?.formatType === 'date') {
+               valueObj = PackageUtils.formatDate(valueObj, field.name, field?.dateFormat)
+            }
+            if(field?.formatType === 'number') {
+                valueObj = PackageUtils.convertToNumber(valueObj, field.name);
+            }
+            if(field?.formatType === 'float') {
+              valueObj = PackageUtils.convertToFloat(valueObj, field.name);
+            }
+            if(field?.formatType === 'boolean') {
+              valueObj = PackageUtils.convertToBoolean(valueObj, field.name);
+            }
+          }
+          return valueObj;
+      }
+
   }
