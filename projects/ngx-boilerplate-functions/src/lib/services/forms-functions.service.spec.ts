@@ -27,7 +27,7 @@ describe('FormsFunctionsService', () => {
       { name: 'email', validations: [Validators.email, Validators.required] }
     ];
 
-    service.setFormFieldsValidations(form, fields);
+    service.setFormGroupValidations(form, fields);
 
     expect(form.get('name')!.hasValidator(Validators.required)).toBeTrue();
     expect(form.get('email')!.hasValidator(Validators.email)).toBeTrue();
@@ -37,7 +37,7 @@ describe('FormsFunctionsService', () => {
   it('[setFormFieldsValidations]: should not change validations for fields not listed', () => {
     const initialValidator = form.get('age')!.validator;
 
-    service.setFormFieldsValidations(form, [{ name: 'name', validations: [Validators.required] }]);
+    service.setFormGroupValidations(form, [{ name: 'name', validations: [Validators.required] }]);
 
     expect(form.get('age')!.validator).toBe(initialValidator);
   });
@@ -47,7 +47,7 @@ describe('FormsFunctionsService', () => {
       { name: 'nonExistentField', validations: [Validators.required] }
     ];
 
-    service.setFormFieldsValidations(form, fields);
+    service.setFormGroupValidations(form, fields);
 
     expect(form.contains('nonExistentField')).toBeFalse();
   });
@@ -57,7 +57,7 @@ describe('FormsFunctionsService', () => {
       { name: 'name', validations: [] }
     ];
 
-    service.setFormFieldsValidations(form, fields);
+    service.setFormGroupValidations(form, fields);
 
     expect(form.get('name')!.validator).toBeNull();
   });
@@ -69,16 +69,16 @@ describe('FormsFunctionsService', () => {
 
     spyOn(form.get('name')!, 'updateValueAndValidity');
 
-    service.setFormFieldsValidations(form, fields);
+    service.setFormGroupValidations(form, fields);
 
     expect(form.get('name')!.updateValueAndValidity).toHaveBeenCalled();
   });
 
   it('[setFormFieldsValidations]: should not throw errors if form is null', () => {
-    expect(() => service.setFormFieldsValidations(null as any, [])).not.toThrow();
+    expect(() => service.setFormGroupValidations(null as any, [])).not.toThrow();
   });
 
   it('[setFormFieldsValidations]: should not throw errors if fields array is empty', () => {
-    expect(() => service.setFormFieldsValidations(form, [])).not.toThrow();
+    expect(() => service.setFormGroupValidations(form, [])).not.toThrow();
   });
 });

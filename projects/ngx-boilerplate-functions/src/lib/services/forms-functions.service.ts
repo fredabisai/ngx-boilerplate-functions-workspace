@@ -10,15 +10,15 @@ import {
 } from "@angular/forms";
 import {VERSION} from "@angular/cli";
 import {PackageUtils} from "../utils/package.utils";
-import {FormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
+import {FormFieldInfo, IFormsFunctionsService} from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
   providedIn: 'root'
 })
-export class FormsFunctionsService {
+export class FormsFunctionsService implements IFormsFunctionsService{
   private majorVersion = parseInt(VERSION.major, 10);
 
-  setFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
+  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if ( field?.name &&  form?.contains(field.name) && field?.validations?.length) {
@@ -28,7 +28,7 @@ export class FormsFunctionsService {
       }
     }
   }
-  removeFormFieldsValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
+  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if (field?.name &&  form?.contains(field.name)) {
@@ -87,10 +87,12 @@ export class FormsFunctionsService {
       for (const field of fieldsToAdd) {
         if (field?.name && !form?.contains(field.name)) {
           if (PackageUtils.isUntypedFormGroup(form)) {
-            form.addControl(field.name, new UntypedFormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
+            form.addControl(field.name, new UntypedFormControl(field?.value ?? null, field?.validations?.length ?
+              field.validations : []));
           }
           if (PackageUtils.isFormGroup(form)) {
-            form.addControl(field.name, new FormControl(field?.value ?? null, field?.validations?.length ? field.validations : []));
+            form.addControl(field.name, new FormControl(field?.value ?? null, field?.validations?.length ?
+              field.validations : []));
           }
         }
       }
@@ -104,7 +106,7 @@ export class FormsFunctionsService {
     }
   }
 
-checkIfTextsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string, matchingControlName: string): void {
+checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string, matchingControlName: string): void {
     const control = formGroup.controls[controlName];
     const matchingControl = formGroup.controls[matchingControlName];
 
