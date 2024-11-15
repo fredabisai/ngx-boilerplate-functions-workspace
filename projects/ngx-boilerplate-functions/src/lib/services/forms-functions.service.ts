@@ -241,6 +241,13 @@ checkIfTextsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string,
     form.addControl(controlName, control);
   }
 
+  removeFormControl(form: FormGroup, controlName: string): void {
+    if(!form.contains(controlName)) {
+      return;
+    }
+    form.removeControl(controlName);
+  }
+
 
 
 }
