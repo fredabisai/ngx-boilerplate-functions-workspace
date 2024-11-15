@@ -17,7 +17,7 @@ export interface IFormFieldInfo {
   options?: { onlySelf?: boolean; emitEvent?: boolean;};
   formatType?: 'string' | 'number' | 'float' | 'boolean' | 'date' | 'datetime';
   dateFormat?: string;
-  mappedKey: string;
+  mappedKey?: string;
 }
 export class FormFieldInfo implements IFormFieldInfo {
   name: string;
@@ -27,7 +27,7 @@ export class FormFieldInfo implements IFormFieldInfo {
   options?: { onlySelf?: boolean; emitEvent?: boolean;};
   formatType?: 'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove';
   dateFormat?: string;
-  mappedKey: string;
+  mappedKey?: string;
 }
 export interface IFormsFunctionsService {
   setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void;
