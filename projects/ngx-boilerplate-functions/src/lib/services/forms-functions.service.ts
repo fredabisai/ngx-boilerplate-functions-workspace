@@ -223,5 +223,13 @@ export class FormsFunctionsService {
          }
          return formGroup;
       }
+      markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void {
+        Object.keys(form.controls).forEach(field => {
+          const control = form.get(field);
+          control?.markAsTouched({ onlySelf: true });
+        });
+      }
 
-  }
+
+
+}
