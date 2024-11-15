@@ -104,131 +104,142 @@ export class FormsFunctionsService {
     }
   }
 
-    checkIfTextsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string, matchingControlName: string): void {
-        const control = formGroup.controls[controlName];
-        const matchingControl = formGroup.controls[matchingControlName];
+checkIfTextsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string, matchingControlName: string): void {
+    const control = formGroup.controls[controlName];
+    const matchingControl = formGroup.controls[matchingControlName];
 
-        if (matchingControl.errors && !matchingControl.errors.mustMatch) {
+    if (matchingControl.errors && !matchingControl.errors.mustMatch) {
+      return;
+    }
+
+    // set error on matchingControl if validation fails
+    if (control.value !== matchingControl.value) {
+      matchingControl.setErrors({ mustMatch: true });
+    } else {
+      matchingControl.setErrors(null);
+    }
+  }
+
+  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: FormFieldInfo[]): FormGroup | undefined {
+        const formGroup = formBuilder.group({});
+        if(!fields?.length) {
+          return formGroup;
+        }
+        for (const field of fields) {
+           if(PackageUtils.isFormBuilder(formBuilder)) {
+             formGroup.addControl(field.name, new FormControl(field?.value ?? field?.defaultValue ?? null));
+           }
+           if(PackageUtils.isUntypedFormBuilder(formBuilder)) {
+             formGroup.addControl(field.name, new UntypedFormControl(field?.value ?? field?.defaultValue ?? null));
+           }
+        }
+        return formGroup;
+  }
+  resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: FormFieldInfo[]): void {
+       if(!defaultFields?.length) {
+          formGroup.reset();
           return;
-        }
-
-        // set error on matchingControl if validation fails
-        if (control.value !== matchingControl.value) {
-          matchingControl.setErrors({ mustMatch: true });
-        } else {
-          matchingControl.setErrors(null);
-        }
-      }
-
-      initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: FormFieldInfo[]): FormGroup | undefined {
-            const formGroup = formBuilder.group({});
-            if(!fields?.length) {
-              return formGroup;
-            }
-            for (const field of fields) {
-               if(PackageUtils.isFormBuilder(formBuilder)) {
-                 formGroup.addControl(field.name, new FormControl(field?.value ?? field?.defaultValue ?? null));
-               }
-               if(PackageUtils.isUntypedFormBuilder(formBuilder)) {
-                 formGroup.addControl(field.name, new UntypedFormControl(field?.value ?? field?.defaultValue ?? null));
-               }
-            }
-            return formGroup;
-      }
-      resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: FormFieldInfo[]): void {
-           if(!defaultFields?.length) {
-              formGroup.reset();
-              return;
-           }
-           let defaultValuesToReset: any = {};
-           for (const field of defaultFields) {
-             if(!defaultValuesToReset.hasOwnProperty(field.name)) {
-               defaultValuesToReset = {...defaultValuesToReset, [field.name]: field?.value ?? null};
-             }
-           }
-           formGroup.reset(defaultValuesToReset);
-      }
-      getFormControlErrorMessage(control: FormControl | UntypedFormControl,
-                          errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength' | 'pattern' | 'min' | 'max' | 'email'): any {
-          if(!control) {
-            return undefined;
-          }
-          if(control?.hasError(errorType)) {
-            return control.getError(errorType);
-          }
-      }
-      isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean {
-           if(!control || !controlMarks?.length) {
-             return false;
-           }
-           controlMarks = [...new Set(controlMarks)];
-           control?.invalid && controlMarks.every(mark => controlMarks[mark]);
-      }
-      isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean {
-         return <boolean>forGroup?.valid;
-      }
-      getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | undefined {
-        const errors: {key: string[]} | undefined = undefined;
-        Object.keys(forGroup.controls).forEach(key => {
-          const controlErrors: ValidationErrors | null | undefined = forGroup.get(key)?.errors;
-          if (controlErrors) {
-            errors[key] = controlErrors;
-          }
-        });
-        return errors;
-      }
-      getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormFieldInfo[]) {
-          if(!fieldsToFormat?.length) {
-            return formGroup?.value;
-          }
-          let valueObj: any = formGroup?.value;
-          if(!valueObj) {
-            return undefined;
-          }
-          for (const field of fieldsToFormat) {
-            if(field?.formatType === 'remove') {
-              valueObj = PackageUtils.removeKeyFromObject(valueObj, field.name)
-            }
-            if(field?.formatType === 'string') {
-              valueObj = PackageUtils.convertToString(valueObj, field.name)
-            }
-            if(field?.formatType === 'date') {
-               valueObj = PackageUtils.formatDate(valueObj, field.name, field?.dateFormat)
-            }
-            if(field?.formatType === 'number') {
-                valueObj = PackageUtils.convertToNumber(valueObj, field.name);
-            }
-            if(field?.formatType === 'float') {
-              valueObj = PackageUtils.convertToFloat(valueObj, field.name);
-            }
-            if(field?.formatType === 'boolean') {
-              valueObj = PackageUtils.convertToBoolean(valueObj, field.name);
-            }
-          }
-          return valueObj;
-      }
-      patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: FormFieldInfo[]): FormGroup | UntypedFormGroup {
-         if(!formGroup) {
-           return formGroup;
+       }
+       let defaultValuesToReset: any = {};
+       for (const field of defaultFields) {
+         if(!defaultValuesToReset.hasOwnProperty(field.name)) {
+           defaultValuesToReset = {...defaultValuesToReset, [field.name]: field?.value ?? null};
          }
-         if(!mappedKeys?.length) {
-           formGroup.patchValue(data);
-         } else {
-           formGroup.patchValue({
-             ...data, ...(mappedKeys.reduce((obj, currentValue) => ({
-               ...obj,
-               [currentValue?.name]: data?.hasOwnProperty(currentValue?.mappedKey) ? data[currentValue?.mappedKey] : undefined
-             }), {}))
-           });
-         }
-         return formGroup;
+       }
+       formGroup.reset(defaultValuesToReset);
+  }
+  getFormControlErrorMessage(control: FormControl | UntypedFormControl,
+                      errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength' | 'pattern' | 'min' | 'max' | 'email'): any {
+      if(!control) {
+        return undefined;
       }
-      markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void {
-        Object.keys(form.controls).forEach(field => {
-          const control = form.get(field);
-          control?.markAsTouched({ onlySelf: true });
-        });
+      if(control?.hasError(errorType)) {
+        return control.getError(errorType);
       }
+  }
+  isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean {
+       if(!control || !controlMarks?.length) {
+         return false;
+       }
+       controlMarks = [...new Set(controlMarks)];
+       control?.invalid && controlMarks.every(mark => controlMarks[mark]);
+  }
+  isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean {
+     return <boolean>forGroup?.valid;
+  }
+  getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | undefined {
+    const errors: {key: string[]} | undefined = undefined;
+    Object.keys(forGroup.controls).forEach(key => {
+      const controlErrors: ValidationErrors | null | undefined = forGroup.get(key)?.errors;
+      if (controlErrors) {
+        errors[key] = controlErrors;
+      }
+    });
+    return errors;
+  }
+  getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormFieldInfo[]) {
+      if(!fieldsToFormat?.length) {
+        return formGroup?.value;
+      }
+      let valueObj: any = formGroup?.value;
+      if(!valueObj) {
+        return undefined;
+      }
+      for (const field of fieldsToFormat) {
+        if(field?.formatType === 'remove') {
+          valueObj = PackageUtils.removeKeyFromObject(valueObj, field.name)
+        }
+        if(field?.formatType === 'string') {
+          valueObj = PackageUtils.convertToString(valueObj, field.name)
+        }
+        if(field?.formatType === 'date') {
+           valueObj = PackageUtils.formatDate(valueObj, field.name, field?.dateFormat)
+        }
+        if(field?.formatType === 'number') {
+            valueObj = PackageUtils.convertToNumber(valueObj, field.name);
+        }
+        if(field?.formatType === 'float') {
+          valueObj = PackageUtils.convertToFloat(valueObj, field.name);
+        }
+        if(field?.formatType === 'boolean') {
+          valueObj = PackageUtils.convertToBoolean(valueObj, field.name);
+        }
+      }
+      return valueObj;
+  }
+  patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: FormFieldInfo[]): FormGroup | UntypedFormGroup {
+     if(!formGroup) {
+       return formGroup;
+     }
+     if(!mappedKeys?.length) {
+       formGroup.patchValue(data);
+     } else {
+       formGroup.patchValue({
+         ...data, ...(mappedKeys.reduce((obj, currentValue) => ({
+           ...obj,
+           [currentValue?.name]: data?.hasOwnProperty(currentValue?.mappedKey) ? data[currentValue?.mappedKey] : undefined
+         }), {}))
+       });
+     }
+     return formGroup;
+  }
+  markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void {
+    Object.keys(form.controls).forEach(field => {
+      const control = form.get(field);
+      control?.markAsTouched({ onlySelf: true });
+    });
+  }
+  addFormControl(form: FormGroup | UntypedFormGroup, controlName: string,
+                 control: FormControl | UntypedFormGroup): void {
+    if(!control || !controlName || !form) {
+      return;
+    }
+    if((PackageUtils.isFormGroup(form) && PackageUtils.isUntypedFormControl(control)) ||
+      (PackageUtils.isUntypedFormGroup(form) && PackageUtils.isFormControl(control))) {
+      return;
+    }
+    form.addControl(controlName, control);
+  }
 
 
 
