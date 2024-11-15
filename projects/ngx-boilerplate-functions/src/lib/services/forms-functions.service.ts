@@ -207,5 +207,21 @@ export class FormsFunctionsService {
           }
           return valueObj;
       }
+      patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: FormFieldInfo[]): FormGroup | UntypedFormGroup {
+         if(!formGroup) {
+           return formGroup;
+         }
+         if(!mappedKeys?.length) {
+           formGroup.patchValue(data);
+         } else {
+           formGroup.patchValue({
+             ...data, ...(mappedKeys.reduce((obj, currentValue) => ({
+               ...obj,
+               [currentValue?.name]: data?.hasOwnProperty(currentValue?.mappedKey) ? data[currentValue?.mappedKey] : undefined
+             }), {}))
+           });
+         }
+         return formGroup;
+      }
 
   }
