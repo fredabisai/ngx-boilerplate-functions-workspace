@@ -25,7 +25,7 @@ export class FormFieldInfo implements IFormFieldInfo {
   defaultValue?: any;
   value?: any;
   options?: { onlySelf?: boolean; emitEvent?: boolean;};
-  formatType?: 'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove';
+  formatType?: 'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
   dateFormat?: string;
   mappedKey?: string;
 }
