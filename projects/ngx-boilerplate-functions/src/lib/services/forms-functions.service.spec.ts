@@ -264,4 +264,79 @@ describe('FormsFunctionsService', () => {
     expect(form.get('field3')!.value).toBeNull();
   });
 
+  it('should add new controls to a typed FormGroup', () => {
+    const fieldsToAdd: FormFieldInfo[] = [
+      { name: 'field3', value: 'value3', validations: [] },
+      { name: 'field4', value: 123, validations: [] },
+    ];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.contains('field3')).toBeTrue();
+    expect(form.contains('field4')).toBeTrue();
+    expect(form.get('field3')!.value).toBe('value3');
+    expect(form.get('field4')!.value).toBe(123);
+  });
+
+  it('should add new controls to an UntypedFormGroup', () => {
+    const fieldsToAdd: FormFieldInfo[] = [
+      { name: 'field3', value: 'value3', validations: [] },
+    ];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.contains('field3')).toBeTrue();
+    expect(form.get('field3')!.value).toBe('value3');
+  });
+
+  it('should remove existing controls', () => {
+    const fieldsToRemove = [{ name: 'field1' }, { name: 'field2', emitEvent: true }];
+
+    service.changeFormControlFields(form, [], fieldsToRemove);
+
+    expect(form.contains('field1')).toBeFalse();
+    expect(form.contains('field2')).toBeFalse();
+  });
+
+  it('should not add a control if it already exists', () => {
+    const fieldsToAdd: FormFieldInfo[] = [{ name: 'field1', value: 'newValue', validations: [] }];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.get('field1')!.value).toBeNull(); // Original value remains
+  });
+
+  it('should not remove a control that does not exist', () => {
+    const fieldsToRemove = [{ name: 'nonexistentField' }];
+
+    expect(() => service.changeFormControlFields(form, [], fieldsToRemove)).not.toThrow();
+
+    expect(form.contains('field1')).toBeTrue();
+    expect(form.contains('field2')).toBeTrue();
+  });
+
+  it('should handle empty arrays gracefully', () => {
+    service.changeFormControlFields(form, [], []);
+
+    expect(form.contains('field1')).toBeTrue();
+    expect(form.contains('field2')).toBeTrue();
+  });
+
+  it('should handle null or undefined inputs gracefully', () => {
+    expect(() => service.changeFormControlFields(form, null as any, null as any)).not.toThrow();
+    expect(form.contains('field1')).toBeTrue();
+    expect(form.contains('field2')).toBeTrue();
+  });
+
+  it('should use correct validators when adding controls', () => {
+    const fieldsToAdd: FormFieldInfo[] = [
+      { name: 'field3', value: 'value3', validations: [Validators.required] },
+    ];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.contains('field3')).toBeTrue();
+    expect(form.get('field3')!.validator).toBeDefined();
+  });
+
 });
