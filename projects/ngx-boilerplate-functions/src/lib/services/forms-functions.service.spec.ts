@@ -141,4 +141,68 @@ describe('FormsFunctionsService', () => {
     expect(form.get('field3')!.validator).toBeNull();
     expect(form.get('field3')!.value).toBeNull();
   });
+
+  it('[disableFields]: should disable specified fields without options', () => {
+    const fieldsToDisable: FormFieldInfo[] = [
+      { name: 'field1' },
+      { name: 'field2' },
+    ];
+
+    service.disableFields(form, fieldsToDisable);
+
+    expect(form.get('field1')!.disabled).toBeTrue();
+    expect(form.get('field2')!.disabled).toBeTrue();
+    expect(form.get('field3')!.disabled).toBeFalse(); // field3 should remain enabled
+  });
+
+  it('[disableFields]: should disable specified fields with options', () => {
+    const fieldsToDisable: FormFieldInfo[] = [
+      { name: 'field1', options: { onlySelf: true, emitEvent: false } },
+    ];
+
+    spyOn(form.get('field1')!, 'disable').and.callThrough();
+
+    service.disableFields(form, fieldsToDisable);
+
+    expect(form.get('field1')!.disable).toHaveBeenCalledWith({
+      onlySelf: true,
+      emitEvent: false,
+    });
+    expect(form.get('field1')!.disabled).toBeTrue();
+  });
+
+  it('[disableFields]: should do nothing if fieldsToDisable is empty', () => {
+    service.disableFields(form, []);
+
+    // Ensure all fields remain enabled
+    expect(form.get('field1')!.disabled).toBeFalse();
+    expect(form.get('field2')!.disabled).toBeFalse();
+    expect(form.get('field3')!.disabled).toBeFalse();
+  });
+
+  it('[disableFields]: should do nothing if a field does not exist in the form group', () => {
+    const fieldsToDisable: FormFieldInfo[] = [
+      { name: 'nonexistentField' },
+    ];
+
+    service.disableFields(form, fieldsToDisable);
+
+    // Ensure existing fields are unchanged
+    expect(form.get('field1')!.disabled).toBeFalse();
+    expect(form.get('field2')!.disabled).toBeFalse();
+    expect(form.get('field3')!.disabled).toBeFalse();
+  });
+
+  it('[disableFields]: should gracefully handle null or undefined fieldsToDisable', () => {
+    service.disableFields(form, null as any);
+
+    // Ensure all fields remain enabled
+    expect(form.get('field1')!.disabled).toBeFalse();
+    expect(form.get('field2')!.disabled).toBeFalse();
+    expect(form.get('field3')!.disabled).toBeFalse();
+  });
+
+  it('[disableFields]: should gracefully handle an undefined form group', () => {
+    expect(() => service.disableFields(null as any, [{ name: 'field1' }])).not.toThrow();
+  });
 });
