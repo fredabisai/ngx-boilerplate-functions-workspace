@@ -206,6 +206,9 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
         if(field?.formatType === 'boolean') {
           valueObj = PackageUtils.convertToBoolean(valueObj, field.name);
         }
+        if(field?.formatType === 'add') {
+          valueObj = PackageUtils.addFieldToObject(valueObj, field.name, field?.value);
+        }
       }
       return valueObj;
   }
