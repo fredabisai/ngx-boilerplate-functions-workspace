@@ -55,7 +55,7 @@ export class PackageUtils {
         obj = {...obj, [name]: this.datePipe.transform(obj[name], format)};
       }
       return obj;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Unable to format date format :: ${e?.message}`);
     }
   }
