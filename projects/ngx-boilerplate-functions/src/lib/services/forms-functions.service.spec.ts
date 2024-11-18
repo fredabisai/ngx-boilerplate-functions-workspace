@@ -7,8 +7,9 @@ import {FormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
 describe('FormsFunctionsService', () => {
   let service: FormsFunctionsService;
   let form: FormGroup;
+  let fieldsForm: FormGroup;
 
-  let validationForm: FormGroup;
+  let passwordForm: UntypedFormGroup;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
@@ -23,6 +24,12 @@ describe('FormsFunctionsService', () => {
       field2: [null, [Validators.required, Validators.minLength(3)]],
       field3: [null], // no initial validation
     });
+  });
+  const formBuilder = new FormBuilder();
+
+  passwordForm = new UntypedFormGroup({
+    password: formBuilder.control(''),
+    confirmPassword: formBuilder.control(''),
   });
 
   it('should be created', () => {
@@ -337,6 +344,70 @@ describe('FormsFunctionsService', () => {
 
     expect(form.contains('field3')).toBeTrue();
     expect(form.get('field3')!.validator).toBeDefined();
+  });
+
+
+
+
+  it('[checkIfFormControlsMatch]: should set error when controls do not match', () => {
+    passwordForm.get('password')!.setValue('password123');
+    passwordForm.get('confirmPassword')!.setValue('differentPassword');
+
+    service.checkIfFormControlsMatch(form, 'password', 'confirmPassword');
+
+    expect(passwordForm.get('confirmPassword')!.errors).toEqual({ mustMatch: true });
+  });
+
+  it('[checkIfFormControlsMatch]: should not set error when controls match', () => {
+    passwordForm.get('password')!.setValue('password123');
+    passwordForm.get('confirmPassword')!.setValue('password123');
+
+    service.checkIfFormControlsMatch(form, 'password', 'confirmPassword');
+
+    expect(passwordForm.get('confirmPassword')!.errors).toBeNull();
+  });
+
+  it('[checkIfFormControlsMatch]: should retain existing unrelated errors on matching control', () => {
+    passwordForm.get('password')!.setValue('password123');
+    passwordForm.get('confirmPassword')!.setErrors({ otherError: true });
+
+    service.checkIfFormControlsMatch(passwordForm, 'password', 'confirmPassword');
+
+    expect(passwordForm.get('confirmPassword')!.errors).toEqual({ otherError: true });
+  });
+
+  it('[checkIfFormControlsMatch]: should handle UntypedFormGroup correctly', () => {
+    passwordForm.get('password')!.setValue('password123');
+    passwordForm.get('confirmPassword')!.setValue('differentPassword');
+
+    service.checkIfFormControlsMatch(passwordForm, 'password', 'confirmPassword');
+
+    expect(passwordForm.get('confirmPassword')!.errors).toEqual({ mustMatch: true });
+
+    passwordForm.get('confirmPassword')!.setValue('password123');
+    service.checkIfFormControlsMatch(passwordForm, 'password', 'confirmPassword');
+
+    expect(passwordForm.get('confirmPassword')!.errors).toBeNull();
+  });
+
+  it('[checkIfFormControlsMatch]: should do nothing if matching control has errors other than "mustMatch"', () => {
+    passwordForm.get('password')!.setValue('password123');
+    passwordForm.get('confirmPassword')!.setErrors({ otherError: true });
+
+    service.checkIfFormControlsMatch(form, 'password', 'confirmPassword');
+
+    expect(passwordForm.get('confirmPassword')!.errors).toEqual({ otherError: true });
+  });
+
+  it('[checkIfFormControlsMatch]: should do nothing if control or matching control is missing', () => {
+    const formBuilder = new FormBuilder();
+    const incompleteForm = formBuilder.group({
+      password: [''],
+    });
+
+    expect(() =>
+      service.checkIfFormControlsMatch(incompleteForm, 'password', 'confirmPassword')
+    ).not.toThrow();
   });
 
 });
