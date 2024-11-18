@@ -205,4 +205,63 @@ describe('FormsFunctionsService', () => {
   it('[disableFields]: should gracefully handle an undefined form group', () => {
     expect(() => service.disableFields(null as any, [{ name: 'field1' }])).not.toThrow();
   });
+
+  it('[patchValuesToFields]: should patch values to specified fields', () => {
+    const fieldsToSet: FormFieldInfo[] = [
+      { name: 'field1', value: 'value1' },
+      { name: 'field2', value: 123 },
+    ];
+
+    service.patchValuesToFields(form, fieldsToSet);
+
+    expect(form.get('field1')!.value).toBe('value1');
+    expect(form.get('field2')!.value).toBe(123);
+    expect(form.get('field3')!.value).toBeNull(); // field3 should remain unchanged
+  });
+
+  it('[patchValuesToFields]: should set field value to null if no value is provided', () => {
+    const fieldsToSet: FormFieldInfo[] = [
+      { name: 'field1' },
+      { name: 'field2', value: undefined },
+    ];
+
+    service.patchValuesToFields(form, fieldsToSet);
+
+    expect(form.get('field1')!.value).toBeNull();
+    expect(form.get('field2')!.value).toBeNull();
+  });
+
+  it('[patchValuesToFields]: should do nothing if fieldsToSet is empty', () => {
+    service.patchValuesToFields(form, []);
+
+    // Ensure all fields remain unchanged
+    expect(form.get('field1')!.value).toBeNull();
+    expect(form.get('field2')!.value).toBeNull();
+    expect(form.get('field3')!.value).toBeNull();
+  });
+
+  it('[patchValuesToFields]: should do nothing for nonexistent fields', () => {
+    const fieldsToSet: FormFieldInfo[] = [{ name: 'nonexistentField', value: 'someValue' }];
+
+    service.patchValuesToFields(form, fieldsToSet);
+
+    // Ensure original fields remain unchanged
+    expect(form.get('field1')!.value).toBeNull();
+    expect(form.get('field2')!.value).toBeNull();
+    expect(form.get('field3')!.value).toBeNull();
+  });
+
+  it('[patchValuesToFields]: should handle null or undefined form gracefully', () => {
+    expect(() => service.patchValuesToFields(null as any, [{ name: 'field1', value: 'value1' }])).not.toThrow();
+  });
+
+  it('[patchValuesToFields]: should gracefully handle null or undefined fieldsToSet', () => {
+    service.patchValuesToFields(form, null as any);
+
+    // Ensure no changes occur
+    expect(form.get('field1')!.value).toBeNull();
+    expect(form.get('field2')!.value).toBeNull();
+    expect(form.get('field3')!.value).toBeNull();
+  });
+
 });
