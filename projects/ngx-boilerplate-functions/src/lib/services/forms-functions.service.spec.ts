@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { FormsFunctionsService } from './forms-functions.service';
 import {FormBuilder, FormGroup, UntypedFormGroup, Validators} from "@angular/forms";
-import {FormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
+import {IFormFieldInfo} from "../interfaces/ngx-boilerplate-functions.interface";
 
 describe('FormsFunctionsService', () => {
   let service: FormsFunctionsService;
@@ -36,7 +36,7 @@ describe('FormsFunctionsService', () => {
     expect(service).toBeTruthy();
   });
   it('[setFormFieldsValidations]: should set validators on specified form fields', () => {
-    const fields: FormFieldInfo[] = [
+    const fields: IFormFieldInfo[] = [
       { name: 'name', validations: [Validators.required] },
       { name: 'email', validations: [Validators.email, Validators.required] }
     ];
@@ -57,7 +57,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[setFormFieldsValidations]: should handle fields that do not exist in the form', () => {
-    const fields: FormFieldInfo[] = [
+    const fields: IFormFieldInfo[] = [
       { name: 'nonExistentField', validations: [Validators.required] }
     ];
 
@@ -67,7 +67,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[setFormFieldsValidations]: should skip fields with empty or undefined validations array', () => {
-    const fields: FormFieldInfo[] = [
+    const fields: IFormFieldInfo[] = [
       { name: 'name', validations: [] }
     ];
 
@@ -77,7 +77,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[setFormFieldsValidations]: should update value and validity after setting validators', () => {
-    const fields: FormFieldInfo[] = [
+    const fields: IFormFieldInfo[] = [
       { name: 'name', validations: [Validators.required] }
     ];
 
@@ -97,7 +97,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[removeFormGroupValidations]: should remove validations and set default values for specified fields', () => {
-    const fields: FormFieldInfo[] = [
+    const fields: IFormFieldInfo[] = [
       { name: 'field1', defaultValue: 'default1' },
       { name: 'field2', defaultValue: 'default2' },
     ];
@@ -114,7 +114,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[removeFormGroupValidations]: should do nothing if form is null or undefined', () => {
-    const fields: FormFieldInfo[] = [{ name: 'field1', defaultValue: 'default1' }];
+    const fields: IFormFieldInfo[] = [{ name: 'field1', defaultValue: 'default1' }];
 
     service.removeFormGroupValidations(null as any, fields);
 
@@ -130,7 +130,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[removeFormGroupValidations]: should ignore fields that do not exist in the form group', () => {
-    const fields: FormFieldInfo[] = [{ name: 'nonexistentField', defaultValue: 'default' }];
+    const fields: IFormFieldInfo[] = [{ name: 'nonexistentField', defaultValue: 'default' }];
 
     service.removeFormGroupValidations(form, fields);
 
@@ -140,7 +140,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[removeFormGroupValidations]: should handle fields with no defaultValue specified', () => {
-    const fields: FormFieldInfo[] = [{ name: 'field3' }];
+    const fields: IFormFieldInfo[] = [{ name: 'field3' }];
 
     service.removeFormGroupValidations(form, fields);
 
@@ -150,7 +150,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[disableFields]: should disable specified fields without options', () => {
-    const fieldsToDisable: FormFieldInfo[] = [
+    const fieldsToDisable: IFormFieldInfo[] = [
       { name: 'field1' },
       { name: 'field2' },
     ];
@@ -163,7 +163,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[disableFields]: should disable specified fields with options', () => {
-    const fieldsToDisable: FormFieldInfo[] = [
+    const fieldsToDisable: IFormFieldInfo[] = [
       { name: 'field1', options: { onlySelf: true, emitEvent: false } },
     ];
 
@@ -188,7 +188,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[disableFields]: should do nothing if a field does not exist in the form group', () => {
-    const fieldsToDisable: FormFieldInfo[] = [
+    const fieldsToDisable: IFormFieldInfo[] = [
       { name: 'nonexistentField' },
     ];
 
@@ -214,7 +214,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[patchValuesToFields]: should patch values to specified fields', () => {
-    const fieldsToSet: FormFieldInfo[] = [
+    const fieldsToSet: IFormFieldInfo[] = [
       { name: 'field1', value: 'value1' },
       { name: 'field2', value: 123 },
     ];
@@ -227,7 +227,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[patchValuesToFields]: should set field value to null if no value is provided', () => {
-    const fieldsToSet: FormFieldInfo[] = [
+    const fieldsToSet: IFormFieldInfo[] = [
       { name: 'field1' },
       { name: 'field2', value: undefined },
     ];
@@ -248,7 +248,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[patchValuesToFields]: should do nothing for nonexistent fields', () => {
-    const fieldsToSet: FormFieldInfo[] = [{ name: 'nonexistentField', value: 'someValue' }];
+    const fieldsToSet: IFormFieldInfo[] = [{ name: 'nonexistentField', value: 'someValue' }];
 
     service.patchValuesToFields(form, fieldsToSet);
 
@@ -272,7 +272,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('should add new controls to a typed FormGroup', () => {
-    const fieldsToAdd: FormFieldInfo[] = [
+    const fieldsToAdd: IFormFieldInfo[] = [
       { name: 'field3', value: 'value3', validations: [] },
       { name: 'field4', value: 123, validations: [] },
     ];
@@ -286,7 +286,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('should add new controls to an UntypedFormGroup', () => {
-    const fieldsToAdd: FormFieldInfo[] = [
+    const fieldsToAdd: IFormFieldInfo[] = [
       { name: 'field3', value: 'value3', validations: [] },
     ];
 
@@ -306,7 +306,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('should not add a control if it already exists', () => {
-    const fieldsToAdd: FormFieldInfo[] = [{ name: 'field1', value: 'newValue', validations: [] }];
+    const fieldsToAdd: IFormFieldInfo[] = [{ name: 'field1', value: 'newValue', validations: [] }];
 
     service.changeFormControlFields(form, fieldsToAdd, []);
 
@@ -336,7 +336,7 @@ describe('FormsFunctionsService', () => {
   });
 
   it('should use correct validators when adding controls', () => {
-    const fieldsToAdd: FormFieldInfo[] = [
+    const fieldsToAdd: IFormFieldInfo[] = [
       { name: 'field3', value: 'value3', validations: [Validators.required] },
     ];
 
@@ -408,6 +408,40 @@ describe('FormsFunctionsService', () => {
     expect(() =>
       service.checkIfFormControlsMatch(incompleteForm, 'password', 'confirmPassword')
     ).not.toThrow();
+  });
+
+
+
+  it('should remove the specified control if it exists', () => {
+    expect(form.contains('field1')).toBeTrue();
+
+    service.removeFormControl(form, 'field1');
+
+    expect(form.contains('field1')).toBeFalse();
+  });
+
+  it('should not throw an error if the control does not exist', () => {
+    expect(form.contains('nonExistentField')).toBeFalse();
+
+    expect(() => service.removeFormControl(form, 'nonExistentField')).not.toThrow();
+  });
+
+  it('should not modify the form if the control does not exist', () => {
+    const initialControls = Object.keys(form.controls);
+
+    service.removeFormControl(form, 'nonExistentField');
+
+    expect(Object.keys(form.controls)).toEqual(initialControls);
+  });
+
+  it('should work with a form containing multiple controls', () => {
+    expect(form.contains('field1')).toBeTrue();
+    expect(form.contains('field2')).toBeTrue();
+
+    service.removeFormControl(form, 'field1');
+
+    expect(form.contains('field1')).toBeFalse();
+    expect(form.contains('field2')).toBeTrue();
   });
 
 });

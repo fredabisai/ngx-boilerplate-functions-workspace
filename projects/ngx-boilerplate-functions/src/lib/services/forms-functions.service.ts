@@ -10,7 +10,7 @@ import {
 } from "@angular/forms";
 import {VERSION} from "@angular/cli";
 import {PackageUtils} from "../utils/package.utils";
-import {FormFieldInfo, IFormsFunctionsService} from "../interfaces/ngx-boilerplate-functions.interface";
+import {IFormFieldInfo, IFormsFunctionsService} from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ import {FormFieldInfo, IFormsFunctionsService} from "../interfaces/ngx-boilerpla
 export class FormsFunctionsService implements IFormsFunctionsService{
   private majorVersion = parseInt(VERSION.major, 10);
 
-  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
+  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if ( field?.name &&  form?.contains(field.name) && field?.validations?.length) {
@@ -28,7 +28,7 @@ export class FormsFunctionsService implements IFormsFunctionsService{
       }
     }
   }
-  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormFieldInfo[]): void {
+  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if (field?.name &&  form?.contains(field.name)) {
@@ -40,7 +40,7 @@ export class FormsFunctionsService implements IFormsFunctionsService{
       }
     }
   }
-  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: FormFieldInfo[] = [], fieldsToRemove: string[] = [] ): any {
+  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: IFormFieldInfo[] = [], fieldsToRemove: string[] = [] ): any {
     let payload = form?.value;
     if(payload) {
       if(fieldsToAdd?.length) {
@@ -58,20 +58,20 @@ export class FormsFunctionsService implements IFormsFunctionsService{
     }
     return payload;
   }
-  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: FormFieldInfo[]): void {
+  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: IFormFieldInfo[]): void {
     if(fieldsToDisable?.length) {
       for(const field of fieldsToDisable) {
         if(field?.name && form?.contains(field.name) ) {
           if(field?.options) {
-            form.controls[field].disable(field.options)
+            form.controls[field?.name].disable(field.options)
           } else {
-            form.controls[field].disable();
+            form.controls[field?.name].disable();
           }
         }
       }
     }
   }
-  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: FormFieldInfo[]): void {
+  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: IFormFieldInfo[]): void {
     if (form && fieldsToSet?.length) {
       for (const field of fieldsToSet) {
         if (field?.name && form?.contains(field.name)) {
@@ -81,7 +81,7 @@ export class FormsFunctionsService implements IFormsFunctionsService{
     }
   }
 
-  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: FormFieldInfo[],
+  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: IFormFieldInfo[],
                           fieldsToRemove: {name: string, emitEvent?: boolean}[]): void {
     if (fieldsToAdd?.length) {
       for (const field of fieldsToAdd) {
@@ -110,7 +110,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     const control = formGroup.controls[controlName];
     const matchingControl = formGroup.controls[matchingControlName];
 
-    if (matchingControl.errors && !matchingControl.errors.mustMatch) {
+    if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
       return;
     }
 
@@ -122,8 +122,8 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     }
   }
 
-  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: FormFieldInfo[]): FormGroup | undefined {
-        const formGroup = formBuilder.group({});
+  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: IFormFieldInfo[]): FormGroup | UntypedFormGroup | undefined {
+        const formGroup = PackageUtils.isFormBuilder(formBuilder) ? new FormGroup({}) : new UntypedFormGroup({});
         if(!fields?.length) {
           return formGroup;
         }
@@ -137,7 +137,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
         }
         return formGroup;
   }
-  resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: FormFieldInfo[]): void {
+  resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: IFormFieldInfo[]): void {
        if(!defaultFields?.length) {
           formGroup.reset();
           return;
@@ -159,27 +159,29 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
         return control.getError(errorType);
       }
   }
-  isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean {
+  isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean | undefined {
        if(!control || !controlMarks?.length) {
          return false;
        }
        controlMarks = [...new Set(controlMarks)];
-       control?.invalid && controlMarks.every(mark => controlMarks[mark]);
+       return control?.invalid && controlMarks.every(mark => controlMarks.find(cMark => cMark === mark));
   }
   isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean {
      return <boolean>forGroup?.valid;
   }
   getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | undefined {
-    const errors: {key: string[]} | undefined = undefined;
+    let errors: {key: string[]} | undefined = undefined;
     Object.keys(forGroup.controls).forEach(key => {
       const controlErrors: ValidationErrors | null | undefined = forGroup.get(key)?.errors;
       if (controlErrors) {
-        errors[key] = controlErrors;
+        if(errors) {
+          errors = {...errors, [key]: controlErrors};
+        }
       }
     });
     return errors;
   }
-  getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormFieldInfo[]) {
+  getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: IFormFieldInfo[]): any {
       if(!fieldsToFormat?.length) {
         return formGroup?.value;
       }
@@ -212,7 +214,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
       }
       return valueObj;
   }
-  patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: FormFieldInfo[]): FormGroup | UntypedFormGroup {
+  patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: IFormFieldInfo[]): FormGroup | UntypedFormGroup {
      if(!formGroup) {
        return formGroup;
      }
@@ -222,7 +224,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
        formGroup.patchValue({
          ...data, ...(mappedKeys.reduce((obj, currentValue) => ({
            ...obj,
-           [currentValue?.name]: data?.hasOwnProperty(currentValue?.mappedKey) ? data[currentValue?.mappedKey] : undefined
+           [currentValue?.name]: currentValue?.mappedKey && data?.hasOwnProperty(currentValue?.mappedKey) ? data[currentValue.mappedKey] : undefined
          }), {}))
        });
      }
