@@ -83,5 +83,11 @@ export class PackageUtils {
     }
     return obj;
   }
+  static addFieldToObject(obj: any, name: string, value: any): any {
+    if(!obj || !name || typeof obj !== 'object') {
+      return obj;
+    }
+    return {...obj, [name]: value};
+  }
 
 }
