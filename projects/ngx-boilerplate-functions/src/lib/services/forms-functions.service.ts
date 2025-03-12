@@ -237,7 +237,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     });
   }
   addFormControl(form: FormGroup | UntypedFormGroup, controlName: string,
-                 control: FormControl | UntypedFormGroup): void {
+                 control: FormControl | UntypedFormControl): void {
     if(!control || !controlName || !form) {
       return;
     }

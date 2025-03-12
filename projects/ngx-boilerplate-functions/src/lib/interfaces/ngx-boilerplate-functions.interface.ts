@@ -53,6 +53,6 @@ export interface IFormsFunctionsService {
                        mappedKeys?: IFormFieldInfo[]): FormGroup | UntypedFormGroup;
   markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void;
   addFormControl(form: FormGroup | UntypedFormGroup, controlName: string,
-                 control: FormControl | UntypedFormGroup): void;
+                 control: FormControl | UntypedFormControl): void;
   removeFormControl(form: FormGroup, controlName: string): void;
 }
