@@ -1,11 +1,14 @@
 import { FormsFunctionsService } from './forms-functions.service';
-import { FormBuilder, FormGroup, UntypedFormGroup, Validators } from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import { IFormFieldInfo } from "../interfaces/ngx-boilerplate-functions.interface";
+import {PackageUtils} from "../utils/package.utils";
 
 describe('FormsFunctionsService', () => {
   let service: FormsFunctionsService;
   let form: FormGroup;
   let formBuilder: FormBuilder;
+
+  let untypedForm: UntypedFormGroup;
 
   beforeEach(() => {
     service = new FormsFunctionsService();
@@ -15,6 +18,7 @@ describe('FormsFunctionsService', () => {
       email: [''],
       age: ['']
     });
+    untypedForm = new UntypedFormGroup({});
   });
 
   test('should be created', () => {
@@ -140,5 +144,83 @@ describe('FormsFunctionsService', () => {
     form.patchValue(formValue)
     const result = service.addAndRemoveFieldsOnSubmission(form, null as any, null as any);
     expect(result).toEqual(formValue);
+  });
+  it('[changeFormControlFields] should add new fields to a FormGroup', () => {
+    // (PackageUtils.isFormGroup as jest.Mock).mockReturnValue(true);
+    const fieldsToAdd = [{ name: 'testField', value: 'testValue', validations: [] }];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.contains('testField')).toBe(true);
+    expect(form.get('testField')?.value).toBe('testValue');
+  });
+
+  it('[changeFormControlFields] should add new fields to an UntypedFormGroup', () => {
+    // (PackageUtils.isUntypedFormGroup as jest.Mock).mockReturnValue(true);
+    const fieldsToAdd = [{ name: 'untypedField', value: 'untypedValue', validations: [] }];
+
+    service.changeFormControlFields(untypedForm, fieldsToAdd, []);
+
+    expect(untypedForm.contains('untypedField')).toBe(true);
+    expect(untypedForm.get('untypedField')?.value).toBe('untypedValue');
+  });
+
+  it('[changeFormControlFields] should not add a field if it already exists in FormGroup', () => {
+    form.addControl('existingField', new FormControl('existingValue'));
+    const fieldsToAdd = [{ name: 'existingField', value: 'newValue', validations: [] }];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.get('existingField')?.value).toBe('existingValue'); // Value should remain unchanged
+  });
+
+  it('[changeFormControlFields] should remove fields from a FormGroup', () => {
+    console.log(form?.value)
+    form.addControl('fieldToRemove', new FormControl('toBeRemoved'));
+    console.log(form?.value)
+    const fieldsToRemove = [{ name: 'fieldToRemove', emitEvent: false }];
+
+    service.changeFormControlFields(form, [], fieldsToRemove);
+    console.log(form?.value)
+
+    expect(form.contains('fieldToRemove')).toBe(false);
+  });
+
+  it('[changeFormControlFields] should remove fields from an UntypedFormGroup', () => {
+    untypedForm.addControl('fieldToRemove', new UntypedFormControl('toBeRemoved'));
+    const fieldsToRemove = [{ name: 'fieldToRemove', emitEvent: false }];
+
+    service.changeFormControlFields(untypedForm, [], fieldsToRemove);
+
+    expect(untypedForm.contains('fieldToRemove')).toBe(false);
+  });
+
+  it('[changeFormControlFields] should add multiple fields to a FormGroup', () => {
+    // (PackageUtils.isFormGroup as jest.Mock).mockReturnValue(true);
+    const fieldsToAdd = [
+      { name: 'field1', value: 'value1', validations: [] },
+      { name: 'field2', value: 'value2', validations: [] }
+    ];
+
+    service.changeFormControlFields(form, fieldsToAdd, []);
+
+    expect(form.contains('field1')).toBe(true);
+    expect(form.get('field1')?.value).toBe('value1');
+    expect(form.contains('field2')).toBe(true);
+    expect(form.get('field2')?.value).toBe('value2');
+  });
+
+  it('[changeFormControlFields] should remove multiple fields from a FormGroup', () => {
+    form.addControl('field1', new FormControl('value1'));
+    form.addControl('field2', new FormControl('value2'));
+    const fieldsToRemove = [
+      { name: 'field1', emitEvent: false },
+      { name: 'field2', emitEvent: false }
+    ];
+
+    service.changeFormControlFields(form, [], fieldsToRemove);
+
+    expect(form.contains('field1')).toBe(false);
+    expect(form.contains('field2')).toBe(false);
   });
 });
