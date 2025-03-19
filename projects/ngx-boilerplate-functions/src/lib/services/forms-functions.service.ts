@@ -6,7 +6,7 @@ import {
   UntypedFormBuilder,
   UntypedFormControl,
   UntypedFormGroup, ValidationErrors,
-  ValidatorFn
+  ValidatorFn, Validators
 } from "@angular/forms";
 import {VERSION} from "@angular/cli";
 import {PackageUtils} from "../utils/package.utils";
@@ -96,11 +96,12 @@ export class FormsFunctionsService implements IFormsFunctionsService{
           }
         }
       }
-      if (fieldsToRemove?.length) {
-        for (const field of fieldsToRemove) {
-          if (field?.name && form?.contains(field.name)) {
-            form.removeControl(field.name, {emitEvent: !!field?.emitEvent})
-          }
+    }
+    if (fieldsToRemove?.length) {
+      for (const field of fieldsToRemove) {
+        if (field?.name && form?.contains(field.name)) {
+          form.removeControl(field.name, {emitEvent: !!field?.emitEvent})
+
         }
       }
     }
