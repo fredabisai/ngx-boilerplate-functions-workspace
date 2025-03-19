@@ -1,5 +1,13 @@
 import { FormsFunctionsService } from './forms-functions.service';
-import {FormBuilder, FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from "@angular/forms";
 import { IFormFieldInfo } from "../interfaces/ngx-boilerplate-functions.interface";
 import {PackageUtils} from "../utils/package.utils";
 
@@ -267,3 +275,54 @@ describe('checkIfFormControlsMatch', () => {
   });
 
 });
+
+describe('initializeFormGroup', () => {
+  let formBuilder: FormBuilder;
+  let untypedFormBuilder: UntypedFormBuilder;
+  let service: FormsFunctionsService;
+
+  beforeEach(() => {
+    service = new FormsFunctionsService();
+    formBuilder = new FormBuilder();
+    untypedFormBuilder = new UntypedFormBuilder();
+  });
+
+
+  it('should return an empty FormGroup if no fields are provided', () => {
+    const formGroup = service.initializeFormGroup(formBuilder, []);
+    expect(formGroup).toBeInstanceOf(FormGroup);
+    expect(Object.keys(formGroup?.controls || {})).toHaveLength(0);
+  });
+
+  it('should create a FormGroup with fields and default values', () => {
+    const fields = [
+      { name: 'username', value: 'testuser' },
+      { name: 'email', defaultValue: 'user@example.com' }
+    ];
+    const formGroup = service.initializeFormGroup(formBuilder, fields) as FormGroup;
+
+    expect(formGroup).toBeInstanceOf(FormGroup);
+    expect(formGroup.controls['username'].value).toBe('testuser');
+    expect(formGroup.controls['email'].value).toBe('user@example.com');
+  });
+
+  it('should use UntypedFormGroup when UntypedFormBuilder is provided', () => {
+    const fields = [{ name: 'age', value: 25 }];
+    const formGroup = service.initializeFormGroup(untypedFormBuilder, fields) as UntypedFormGroup;
+
+    expect(formGroup).toBeInstanceOf(UntypedFormGroup);
+    expect(formGroup.controls['age'].value).toBe(25);
+  });
+
+  it('should handle missing field values by falling back to defaultValue or null', () => {
+    const fields = [
+      { name: 'firstName' },
+      { name: 'lastName', defaultValue: 'Doe' }
+    ];
+    const formGroup = service.initializeFormGroup(formBuilder, fields) as FormGroup;
+
+    expect(formGroup.controls['firstName'].value).toBeNull();
+    expect(formGroup.controls['lastName'].value).toBe('Doe');
+  });
+});
+
