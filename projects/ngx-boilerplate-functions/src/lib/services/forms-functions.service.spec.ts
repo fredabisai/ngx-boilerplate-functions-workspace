@@ -223,4 +223,47 @@ describe('FormsFunctionsService', () => {
     expect(form.contains('field1')).toBe(false);
     expect(form.contains('field2')).toBe(false);
   });
+
+});
+
+
+describe('checkIfFormControlsMatch', () => {
+  let service: FormsFunctionsService;
+  let formGroup: FormGroup;
+
+  beforeEach(() => {
+    service = new FormsFunctionsService();
+    formGroup = new FormGroup({
+      password: new FormControl(''),
+      confirmPassword: new FormControl('')
+    });
+  })
+  it('should set mustMatch error if values do not match', () => {
+    formGroup.controls['password'].setValue('123456');
+    formGroup.controls['confirmPassword'].setValue('654321');
+
+    service.checkIfFormControlsMatch(formGroup, 'password', 'confirmPassword');
+
+    expect(formGroup.controls['confirmPassword'].errors).toEqual({ mustMatch: true });
+  });
+
+  it('should remove mustMatch error if values match', () => {
+    formGroup.controls['password'].setValue('123456');
+    formGroup.controls['confirmPassword'].setValue('123456');
+
+    service.checkIfFormControlsMatch(formGroup, 'password', 'confirmPassword');
+
+    expect(formGroup.controls['confirmPassword'].errors).toBeNull();
+  });
+
+  it('should not override other errors if present on matchingControl', () => {
+    formGroup.controls['password'].setValue('123456');
+    formGroup.controls['confirmPassword'].setValue('654321');
+    formGroup.controls['confirmPassword'].setErrors({ required: true });
+
+    service.checkIfFormControlsMatch(formGroup, 'password', 'confirmPassword');
+
+    expect(formGroup.controls['confirmPassword'].errors).toEqual({ required: true });
+  });
+
 });
