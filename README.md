@@ -219,14 +219,25 @@ Dynamically sets validation rules for form controls.
 
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
-- `fields: IFormFieldInfo[]`
+- `fields: FormGroupValidationInput[]`
+```typescript
+export class FormGroupValidationInput implements IFormFieldInfo {
+  name: string;
+  validations?: ValidatorFn[];
+}
+```
 
 #### Example
 ```typescript
-setFormGroupValidations(form, [
-  { name: 'email', validations: [Validators.required, Validators.email] },
-  { name: 'password', validations: [Validators.required, Validators.minLength(6)] }
-]);
+form: FormGroup;
+constructor(private formService: FormsFunctionsService) {}
+setFormGroupValidations()
+{
+  formService.setFormGroupValidations(form, [
+    {name: 'email', validations: [Validators.required, Validators.email]},
+    {name: 'password', validations: [Validators.required, Validators.minLength(6)]}
+  ]);
+}
 ```
 
 ### 11. `removeFormGroupValidations`
@@ -236,15 +247,27 @@ Removes validations from specified form controls and resets their values to defa
 
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
-- `fields: IFormFieldInfo[]`
+- `fields: RemoveFormGroupValidationInput[]`
+```typescript
+export class RemoveFormGroupValidationInput implements IFormFieldInfo {
+  name: string;
+  defaultValue?: any;
+}
+```
 
 #### Example
 ```typescript
-removeFormGroupValidations(form, [
-  { name: 'email', defaultValue: 'user@example.com' },
-  { name: 'password' }
-]);
+form: FormGroup;
+constructor(private formService: FormsFunctionsService) {}
+removeFormGroupValidations()
+{
+  formService.removeFormGroupValidations(form, [
+    {name: 'email', defaultValue: 'user@example.com'},
+    {name: 'password'}
+  ]);
+}
 ```
+Field email will have a default value of user@example.com
 
 ### 12. `addAndRemoveFieldsOnSubmission`
 
@@ -255,6 +278,12 @@ Adds or removes specific fields in the form payload before submission.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToAdd: IFormFieldInfo[]`
 - `fieldsToRemove: string[]`
+```typescript
+export class CommonFieldInput implements IFormFieldInfo {
+  name: string;
+  value?: any;
+}
+```
 
 #### Example
 ```typescript
@@ -262,7 +291,7 @@ const payload = {
   name: 'Donald Olmo',
   address: 'Portland',
 }
-const fieldsToAdd: IFormFieldInfo[] = [
+const fieldsToAdd: CommonFieldInput[] = [
   { name: 'email', value: 'user@example.com' }]
 const fieldsToRemove = ['address']
 const updatedPayload = addAndRemoveFieldsOnSubmission(form, 
