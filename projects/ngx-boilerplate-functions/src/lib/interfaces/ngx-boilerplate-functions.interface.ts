@@ -47,7 +47,7 @@ export interface IFormsFunctionsService {
                                | 'pattern' | 'min' | 'max' | 'email'): any;
   isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean | undefined;
   isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean;
-  getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | undefined;
+  getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | {} | undefined;
   getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: IFormFieldInfo[]): any;
   patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any,
                        mappedKeys?: IFormFieldInfo[]): FormGroup | UntypedFormGroup;
