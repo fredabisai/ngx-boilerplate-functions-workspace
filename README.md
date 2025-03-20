@@ -174,7 +174,7 @@ export class TestingComponent {
   }
 
   checkIfFormControlsMatch() {
-    formService.checkIfFormControlsMatch(this.form, 'password', 'confirmPassword');
+    this.formService.checkIfFormControlsMatch(this.form, 'password', 'confirmPassword');
     console.log(this.form.controls['confirmPassword'].errors)
   }
 }
@@ -196,6 +196,26 @@ Retrieves error messages for a specific form control.
 
 #### Example
 ```typescript
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  getFormControlErrorMessage() {
+    const errorMessage = this.formService.getFormControlErrorMessage(this.form.get('email'), 'required');
+    console.log(errorMessage)
+  }
+}
 const errorMessage = this.formService.getFormControlErrorMessage(this.form.get('email'), 'required');
 ```
 
