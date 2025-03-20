@@ -1,5 +1,6 @@
 import {Injectable} from "@angular/core";
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -151,7 +152,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
        }
        formGroup.reset(defaultValuesToReset);
   }
-  getFormControlErrorMessage(control: FormControl | UntypedFormControl,
+  getFormControlErrorMessage(control: FormControl | UntypedFormControl | AbstractControl<any>,
                       errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength' | 'pattern' | 'min' | 'max' | 'email'): any {
       if(!control) {
         return undefined;
@@ -160,18 +161,18 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
         return control.getError(errorType);
       }
   }
-  isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean | undefined {
+  isFormControlValidWithControlMark(control: FormControl | UntypedFormControl | AbstractControl<any>, controlMarks: ('dirty' | 'pristine' | 'touched' | 'invalid')[]): boolean | undefined {
        if(!control || !controlMarks?.length) {
          return false;
        }
        controlMarks = [...new Set(controlMarks)];
-       return control?.invalid && controlMarks.every(mark => controlMarks.find(cMark => cMark === mark));
+       return controlMarks.every(mark => controlMarks.find(cMark => cMark === mark));
   }
   isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean {
      return <boolean>forGroup?.valid;
   }
-  getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | undefined {
-    let errors: {key: string[]} | undefined = undefined;
+  getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | {} | undefined {
+    let errors: {key: string[]}  | {  } = {};
     Object.keys(forGroup.controls).forEach(key => {
       const controlErrors: ValidationErrors | null | undefined = forGroup.get(key)?.errors;
       if (controlErrors) {
@@ -242,10 +243,10 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     if(!control || !controlName || !form) {
       return;
     }
-    if((PackageUtils.isFormGroup(form) && PackageUtils.isUntypedFormControl(control)) ||
-      (PackageUtils.isUntypedFormGroup(form) && PackageUtils.isFormControl(control))) {
-      return;
-    }
+    // if((PackageUtils.isFormGroup(form) && PackageUtils.isUntypedFormControl(control)) ||
+    //   (PackageUtils.isUntypedFormGroup(form) && PackageUtils.isFormControl(control))) {
+    //   return;
+    // }
     form.addControl(controlName, control);
   }
 
