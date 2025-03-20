@@ -11,7 +11,11 @@ import {
 } from "@angular/forms";
 import {VERSION} from "@angular/cli";
 import {PackageUtils} from "../utils/package.utils";
-import {IFormFieldInfo, IFormsFunctionsService} from "../interfaces/ngx-boilerplate-functions.interface";
+import {
+  IFormFieldInfo,
+  IFormsFunctionsService,
+  InitializeFormGroupInput, ResetFormGroupInput
+} from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -124,17 +128,17 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     }
   }
 
-  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: IFormFieldInfo[]): FormGroup | UntypedFormGroup | undefined {
+  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: InitializeFormGroupInput[]): FormGroup | UntypedFormGroup | undefined {
         const formGroup = PackageUtils.isFormBuilder(formBuilder) ? new FormGroup({}) : new UntypedFormGroup({});
         if(!fields?.length) {
           return formGroup;
         }
         for (const field of fields) {
            if(PackageUtils.isFormBuilder(formBuilder)) {
-             formGroup.addControl(field.name, new FormControl(field?.value ?? field?.defaultValue ?? null));
+             formGroup.addControl(field.name, new FormControl(field?.value ??  undefined, field?.validations ?? []));
            }
            if(PackageUtils.isUntypedFormBuilder(formBuilder)) {
-             formGroup.addControl(field.name, new UntypedFormControl(field?.value ?? field?.defaultValue ?? null));
+             formGroup.addControl(field.name, new UntypedFormControl(field?.value ??  undefined, field?.validations ?? []));
            }
         }
         return formGroup;
