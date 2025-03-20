@@ -318,7 +318,7 @@ export class CommonFieldInput implements IFormFieldInfo {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, RemoveFormGroupValidationInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, CommonFieldInput} from "ngx-boilerplate-functions";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -334,7 +334,7 @@ export class TestingComponent {
   addAndRemoveFieldsOnSubmission() {
     const fieldsToAdd: CommonFieldInput[] = [{name: 'email', value: 'user@example.com'}]
     const fieldsToRemove = ['address']
-    const updatedPayload = addAndRemoveFieldsOnSubmission(this.form, fieldsToAdd, fieldsToRemove);
+    const updatedPayload = formService.addAndRemoveFieldsOnSubmission(this.form, fieldsToAdd, fieldsToRemove);
     console.log(updatedPayload);
   }
 }
@@ -364,11 +364,26 @@ export class DisableFieldInput implements IFormFieldInfo {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, RemoveFormGroupValidationInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, DisableFieldInput} from "ngx-boilerplate-functions";
 
 export class TestingComponent {
+  form: UntypedFormGroup;
 
-
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      name: ['Donald Olmo', [Validators.required]],
+      address: ['Portland', [Validators.required]]
+    })
+  }
+  disableFields() {
+    const fieldsToDisable: DisableFieldInput[] = [
+      { name: 'name'},
+      { name: 'address', options: { onlySelf: true, emitEvent: true }}
+    ]
+    formService.disableFields(this.form, fieldsToDisable);
+  }
 }
 ```
 
