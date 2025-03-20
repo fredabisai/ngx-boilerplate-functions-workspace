@@ -83,9 +83,22 @@ export class InitializeFormGroupInput {
 
 #### Example
 ```typescript
-const form = this.formService.initializeFormGroup(this.fb, [
-  { name: 'username', value: '', validations: [Validators.required] },
-]);
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, InitializeFormGroupInput} from "ngx-boilerplate-functions";
+
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {}
+  initializeFormGroup() {
+    const fields: InitializeFormGroupInput[] = [
+      { name: 'username', value: '', validations: [Validators.required] },
+    ]
+    this.form = this.formService.initializeFormGroup(this.fb, fields);
+  }
+}
 ```
 
 ---
@@ -96,11 +109,39 @@ Resets the form to its initial state or with provided default field values.
 
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
-- `defaultFields?: IFormFieldInfo[]`
+- `defaultFields?: CommonFieldInput[]`
+```typescript
+export class CommonFieldInput implements IFormFieldInfo {
+  name: string;
+  value?: any;
+}
+```
 
 #### Example
 ```typescript
-this.formService.resetFormGroup(this.form);
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, CommonFieldInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      name: ['Donald Olmo', [Validators.required]],
+      address: ['Portland', [Validators.required]]
+    })
+  }
+  resetFormGroup() {
+    const defaultFields: CommonFieldInput[] = [
+      { name: 'name'},
+      { name: 'address', value: '-'}
+    ]
+    formService.resetFormGroup(this.form, defaultFields);
+    console.log(this.form.value)
+  }
+}
 ```
 
 ---
@@ -116,7 +157,31 @@ Validates if two form controls match (e.g., password confirmation).
 
 #### Example
 ```typescript
-this.formService.checkIfFormControlsMatch(this.form, 'password', 'confirmPassword');
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: ['123456', [Validators.required]],
+      confirmPassword: ['654321', [Validators.required]]
+    })
+  }
+
+  checkIfFormControlsMatch() {
+    formService.checkIfFormControlsMatch(this.form, 'password', 'confirmPassword');
+    console.log(this.form.controls['confirmPassword'].errors)
+  }
+}
+```
+#### Result
+```typescript
+   { mustMatch: true }
 ```
 
 ---
@@ -346,7 +411,7 @@ export class TestingComponent {
     "name": "Donald Olmo", "email": "user@example.com"
     }
 ```
-### 12. `disableFields`
+### 13. `disableFields`
 
 #### Description
 Disable specified field in a FormGroup or UntypedFormGroup.
@@ -392,6 +457,93 @@ export class TestingComponent {
    {
     "name": "Donald Olmo", "email": "user@example.com"
     }
+```
+### 14. `patchValuesToFields`
+
+#### Description
+Set values to fields in the FormGroup / UntypedFormGroup.
+
+#### Parameters
+- `formGroup: FormGroup | UntypedFormGroup`
+- `fieldsToSet: CommonFieldInput[]`
+```typescript
+export class CommonFieldInput implements IFormFieldInfo {
+  name: string;
+  value?: any;
+}
+```
+
+#### Example
+```typescript
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, CommonFieldInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      name: [null, [Validators.required]],
+      address: [null, [Validators.required]]
+    })
+  }
+  patchValuesToFields() {
+    const fieldsToSet: CommonFieldInput[] = [{name: 'name', value: 'John Doe'}, 
+                                             {name: 'address', value: 'Dar es Salaam'}]
+    formService.patchValuesToFields(this.form, fieldsToSet);
+    console.log(this.form.value);
+  }
+}
+```
+#### Result
+```typescript
+   {
+    "name": "John Doe", "address": "Dar es Salaam"
+    }
+```
+### 15. `changeFormControlFields`
+
+#### Description
+Add or/and remove fields in the FormGroup / UntypedFormGroup.
+
+#### Parameters
+- `formGroup: FormGroup | UntypedFormGroup`
+- `fieldsToAdd: InitializeFormGroupInput[]`
+- `fieldsToRemove: {name: string, emitEvent?: boolean}[]`
+```typescript
+export class InitializeFormGroupInput implements IFormFieldInfo {
+  name: string;
+  value?: any;
+  validations?: ValidatorFn[];
+}
+```
+
+#### Example
+```typescript
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, InitializeFormGroupInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      name: [null, [Validators.required]],
+      address: [null, [Validators.required]]
+    })
+  }
+  changeFormControlFields() {
+    const fieldsToAdd: InitializeFormGroupInput[] = [{name: 'email', value: 'user@example.com', validations: [Validators.required]}, 
+                                             {name: 'address', value: 'Dar es Salaam'}]
+    const fieldsToRemove: {name: string, emitEvent?: boolean}[] = [{ name: 'address', emitEvent: true }]
+    formService.changeFormControlFields(this.form, fieldsToAdd, fieldsToRemove);
+    console.log(this.form.value);
+  }
+}
 ```
 
 ## Contributing
