@@ -19,21 +19,37 @@ export interface IFormFieldInfo {
   dateFormat?: string;
   mappedKey?: string;
 }
-export class InitializeFormGroupInput {
+export class InitializeFormGroupInput implements IFormFieldInfo {
   name: string;
   value?: any;
   validations?: ValidatorFn[];
 }
-// export class FormFieldInfo implements IFormFieldInfo {
-//   name: string;
-//   validations?: ValidatorFn[];
-//   defaultValue?: any;
-//   value?: any;
-//   options?: { onlySelf?: boolean; emitEvent?: boolean;};
-//   formatType?: 'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
-//   dateFormat?: string;
-//   mappedKey?: string;
-// }
+export class FormGroupValidationInput implements IFormFieldInfo {
+  name: string;
+  validations?: ValidatorFn[];
+}
+export class RemoveFormGroupValidationInput implements IFormFieldInfo {
+  name: string;
+  defaultValue?: any;
+}
+export class CommonFieldInput implements IFormFieldInfo {
+  name: string;
+  value?: any;
+}
+export class DisableFieldInput implements IFormFieldInfo {
+  name: string;
+  options?: { onlySelf?: boolean; emitEvent?: boolean;};
+}
+export class FormatFieldInput implements IFormFieldInfo {
+  name: string;
+  formatType?:  'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
+  dateFormat?: string;
+  value?: any;
+}
+export class MappedKeysInput implements IFormFieldInfo {
+  name: string;
+  mappedKey?: string;
+}
 export interface IFormsFunctionsService {
   setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void;
   removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void;
@@ -53,7 +69,7 @@ export interface IFormsFunctionsService {
   isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean | undefined;
   isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean;
   getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | {} | undefined;
-  getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: IFormFieldInfo[]): any;
+  formatPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: IFormFieldInfo[]): any;
   patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any,
                        mappedKeys?: IFormFieldInfo[]): FormGroup | UntypedFormGroup;
   markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void;
