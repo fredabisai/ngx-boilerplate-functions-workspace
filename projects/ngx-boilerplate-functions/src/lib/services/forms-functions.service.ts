@@ -12,9 +12,12 @@ import {
 import {VERSION} from "@angular/cli";
 import {PackageUtils} from "../utils/package.utils";
 import {
+  DisableFieldInput,
+  CommonFieldInput,
+  FormGroupValidationInput,
   IFormFieldInfo,
   IFormsFunctionsService,
-  InitializeFormGroupInput, ResetFormGroupInput
+  InitializeFormGroupInput, RemoveFormGroupValidationInput, ResetFormGroupInput, FormatFieldInput, MappedKeysInput
 } from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
@@ -23,7 +26,7 @@ import {
 export class FormsFunctionsService implements IFormsFunctionsService{
   private majorVersion = parseInt(VERSION.major, 10);
 
-  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void {
+  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormGroupValidationInput[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if ( field?.name &&  form?.contains(field.name) && field?.validations?.length) {
@@ -33,19 +36,19 @@ export class FormsFunctionsService implements IFormsFunctionsService{
       }
     }
   }
-  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void {
+  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: RemoveFormGroupValidationInput[]): void {
     if (form && fields?.length) {
       for (const field of fields) {
         if (field?.name &&  form?.contains(field.name)) {
           form.get(field.name)!.setErrors(null);
           form.get(field.name)!.clearValidators();
-          form.get(field.name)!.patchValue(field?.defaultValue !== null ? field?.defaultValue : null);
+          form.get(field.name)!.patchValue(field?.defaultValue);
           form.get(field.name)!.updateValueAndValidity();
         }
       }
     }
   }
-  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: IFormFieldInfo[] = [], fieldsToRemove: string[] = [] ): any {
+  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: CommonFieldInput[] = [], fieldsToRemove: string[] = [] ): any {
     let payload = form?.value;
     if(payload) {
       if(fieldsToAdd?.length) {
@@ -63,7 +66,7 @@ export class FormsFunctionsService implements IFormsFunctionsService{
     }
     return payload;
   }
-  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: IFormFieldInfo[]): void {
+  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: DisableFieldInput[]): void {
     if(fieldsToDisable?.length) {
       for(const field of fieldsToDisable) {
         if(field?.name && form?.contains(field.name) ) {
@@ -76,7 +79,7 @@ export class FormsFunctionsService implements IFormsFunctionsService{
       }
     }
   }
-  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: IFormFieldInfo[]): void {
+  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: CommonFieldInput[]): void {
     if (form && fieldsToSet?.length) {
       for (const field of fieldsToSet) {
         if (field?.name && form?.contains(field.name)) {
@@ -86,7 +89,7 @@ export class FormsFunctionsService implements IFormsFunctionsService{
     }
   }
 
-  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: IFormFieldInfo[],
+  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: InitializeFormGroupInput[],
                           fieldsToRemove: {name: string, emitEvent?: boolean}[]): void {
     if (fieldsToAdd?.length) {
       for (const field of fieldsToAdd) {
@@ -143,7 +146,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
         }
         return formGroup;
   }
-  resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: IFormFieldInfo[]): void {
+  resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: CommonFieldInput[]): void {
        if(!defaultFields?.length) {
           formGroup.reset();
           return;
@@ -187,7 +190,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     });
     return errors;
   }
-  getFormPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: IFormFieldInfo[]): any {
+  formatPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormatFieldInput[]): any {
       if(!fieldsToFormat?.length) {
         return formGroup?.value;
       }
@@ -220,7 +223,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
       }
       return valueObj;
   }
-  patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: IFormFieldInfo[]): FormGroup | UntypedFormGroup {
+  patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any, mappedKeys?: MappedKeysInput[]): FormGroup | UntypedFormGroup {
      if(!formGroup) {
        return formGroup;
      }
