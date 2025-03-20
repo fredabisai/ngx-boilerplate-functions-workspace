@@ -326,3 +326,103 @@ describe('initializeFormGroup', () => {
   });
 });
 
+describe('Form Utility Functions', () => {
+  let formGroup: FormGroup;
+  let untypedFormGroup: UntypedFormGroup;
+  let service: FormsFunctionsService;
+
+  beforeEach(() => {
+    service = new FormsFunctionsService();
+    formGroup = new FormGroup({
+      name: new FormControl('John'),
+      age: new FormControl(25)
+    });
+
+    untypedFormGroup = new UntypedFormGroup({
+      email: new UntypedFormControl('test@example.com')
+    });
+  });
+
+  it('should reset form group without default fields', () => {
+    formGroup.controls['name'].setValue('Mike');
+    service.resetFormGroup(formGroup);
+    expect(formGroup.controls['name'].value).toBeNull();
+  });
+
+  it('should reset form group with default fields', () => {
+    service.resetFormGroup(formGroup, [{ name: 'name', value: 'Default' }]);
+    expect(formGroup.controls['name'].value).toBe('Default');
+  });
+
+  it('should return form control error message if it exists', () => {
+    formGroup.controls['name'].setErrors({ required: true });
+    expect(service.getFormControlErrorMessage(formGroup.controls['name'], 'required')).toEqual(true);
+  });
+
+  it('should return undefined if no error exists on form control', () => {
+    expect(service.getFormControlErrorMessage(formGroup.controls['name'], 'required')).toBeUndefined();
+  });
+
+  // it('should return false if control or controlMarks are missing', () => {
+  //   expect(service.isFormControlValidWithControlMark(null, ['dirty'])).toBe(false);
+  // });
+
+  it('should validate control with multiple marks', () => {
+    formGroup.controls['name'].markAsTouched();
+    expect(service.isFormControlValidWithControlMark(formGroup.controls['name'], ['touched'])).toBeTruthy();
+  });
+
+  it('should return true if form group is valid', () => {
+    expect(service.isFormGroupValid(formGroup)).toBeTruthy();
+  });
+
+  it('should return false if form group is invalid', () => {
+    formGroup.controls['name'].setErrors({ required: true });
+    expect(service.isFormGroupValid(formGroup)).toBeFalsy();
+  });
+
+  it('should return error messages for invalid form controls', () => {
+    formGroup.controls['name'].setErrors({ required: true });
+    expect(service.getFormGroupErrorMessages(formGroup)).toEqual({ name: { required: true } });
+  });
+
+  it('should return an unchanged object if no formatting fields are provided', () => {
+    const payload = service.getFormPayloadForSubmission(formGroup, []);
+    expect(payload).toEqual(formGroup.value);
+  });
+
+  it('should remove a key from object when formatType is "remove"', () => {
+    const formattedPayload = service.getFormPayloadForSubmission(formGroup, [{ name: 'name', formatType: 'remove' }]);
+    expect(formattedPayload).not.toHaveProperty('name');
+  });
+
+  it('should patch values to the form group', () => {
+    service.patchFormGroupValues(formGroup, { name: 'Alice', age: 30 });
+    expect(formGroup.controls['name'].value).toBe('Alice');
+    expect(formGroup.controls['age'].value).toBe(30);
+  });
+
+  it('should mark all controls as touched', () => {
+    service.markAllControlsAsTouched(formGroup);
+    expect(formGroup.get('name')?.touched).toBeTruthy();
+    expect(formGroup.get('age')?.touched).toBeTruthy();
+  });
+
+  it('should add a form control', () => {
+    const newControl = new FormControl('New Value');
+    service.addFormControl(formGroup, 'newField', newControl);
+    expect(formGroup.get('newField')?.value).toBe('New Value');
+  });
+
+  it('should remove an existing form control', () => {
+    service.removeFormControl(formGroup, 'name');
+    expect(formGroup.contains('name')).toBeFalsy();
+  });
+
+  it('should not remove a non-existent control', () => {
+    service.removeFormControl(formGroup, 'nonExistent');
+    expect(formGroup.contains('name')).toBeTruthy(); // Ensuring no impact on existing controls
+  });
+});
+
+
