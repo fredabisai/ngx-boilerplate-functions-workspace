@@ -387,12 +387,12 @@ describe('Form Utility Functions', () => {
   });
 
   it('should return an unchanged object if no formatting fields are provided', () => {
-    const payload = service.getFormPayloadForSubmission(formGroup, []);
+    const payload = service.formatPayloadForSubmission(formGroup, []);
     expect(payload).toEqual(formGroup.value);
   });
 
   it('should remove a key from object when formatType is "remove"', () => {
-    const formattedPayload = service.getFormPayloadForSubmission(formGroup, [{ name: 'name', formatType: 'remove' }]);
+    const formattedPayload = service.formatPayloadForSubmission(formGroup, [{ name: 'name', formatType: 'remove' }]);
     expect(formattedPayload).not.toHaveProperty('name');
   });
 
