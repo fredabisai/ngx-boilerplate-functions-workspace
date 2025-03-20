@@ -228,15 +228,30 @@ export class FormGroupValidationInput implements IFormFieldInfo {
 ```
 
 #### Example
+
 ```typescript
-form: FormGroup;
-constructor(private formService: FormsFunctionsService) {}
-setFormGroupValidations()
-{
-  formService.setFormGroupValidations(form, [
-    {name: 'email', validations: [Validators.required, Validators.email]},
-    {name: 'password', validations: [Validators.required, Validators.minLength(6)]}
-  ]);
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, FormGroupValidationInput} from "ngx-boilerplate-functions";
+
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder) {
+    this.form = this.fb.group({
+      email: [null],
+      password: [null]
+    })
+  }
+
+  setFormGroupValidations() {
+    const fields: FormGroupValidationInput[] = [
+      {name: 'email', validations: [Validators.required, Validators.email]},
+      {name: 'password', validations: [Validators.required, Validators.minLength(6)]}
+    ]
+    formService.setFormGroupValidations(this.form, fields);
+  }
 }
 ```
 
@@ -256,15 +271,30 @@ export class RemoveFormGroupValidationInput implements IFormFieldInfo {
 ```
 
 #### Example
+
 ```typescript
-form: FormGroup;
-constructor(private formService: FormsFunctionsService) {}
-removeFormGroupValidations()
-{
-  formService.removeFormGroupValidations(form, [
-    {name: 'email', defaultValue: 'user@example.com'},
-    {name: 'password'}
-  ]);
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, RemoveFormGroupValidationInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]]
+    })
+  }
+
+  removeFormGroupValidations() {
+    const fields: RemoveFormGroupValidationInput[] = [
+      {name: 'email', defaultValue: 'user@example.com'},
+      {name: 'password'}
+    ]
+    formService.removeFormGroupValidations(this.form, fields);
+  }
 }
 ```
 Field email will have a default value of user@example.com
@@ -276,7 +306,7 @@ Adds or removes specific fields in the form payload before submission.
 
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToAdd: IFormFieldInfo[]`
+- `fieldsToAdd: CommonFieldInput[]`
 - `fieldsToRemove: string[]`
 ```typescript
 export class CommonFieldInput implements IFormFieldInfo {
@@ -287,16 +317,27 @@ export class CommonFieldInput implements IFormFieldInfo {
 
 #### Example
 ```typescript
-const payload = {
-  name: 'Donald Olmo',
-  address: 'Portland',
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, RemoveFormGroupValidationInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      name: ['Donald Olmo', [Validators.required]],
+      address: ['Portland', [Validators.required]]
+    })
+  }
+  addAndRemoveFieldsOnSubmission() {
+    const fieldsToAdd: CommonFieldInput[] = [{name: 'email', value: 'user@example.com'}]
+    const fieldsToRemove = ['address']
+    const updatedPayload = addAndRemoveFieldsOnSubmission(this.form, fieldsToAdd, fieldsToRemove);
+    console.log(updatedPayload);
+  }
 }
-const fieldsToAdd: CommonFieldInput[] = [
-  { name: 'email', value: 'user@example.com' }]
-const fieldsToRemove = ['address']
-const updatedPayload = addAndRemoveFieldsOnSubmission(form, 
-  fieldsToAdd,fieldsToRemove);
-console.log(updatedPayload);
 ```
 
 #### Result
@@ -305,28 +346,30 @@ console.log(updatedPayload);
     "name": "Donald Olmo", "email": "user@example.com"
     }
 ```
-### 12. `addAndRemoveFieldsOnSubmission`
+### 12. `disableFields`
 
 #### Description
-Adds or removes specific fields in the form payload before submission.
+Disable specified field in a FormGroup or UntypedFormGroup.
 
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToAdd: IFormFieldInfo[]`
-- `fieldsToRemove: string[]`
+- `fieldsToDisable: DisableFieldInput[]`
+```typescript
+export class DisableFieldInput implements IFormFieldInfo {
+  name: string;
+  options?: { onlySelf?: boolean; emitEvent?: boolean;};
+}
+```
 
 #### Example
 ```typescript
-const payload = {
-  name: 'Donald Olmo',
-  address: 'Portland',
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, RemoveFormGroupValidationInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+
+
 }
-const fieldsToAdd: IFormFieldInfo[] = [
-  { name: 'email', value: 'user@example.com' }]
-const fieldsToRemove = ['address']
-const updatedPayload = addAndRemoveFieldsOnSubmission(form, 
-  fieldsToAdd,fieldsToRemove);
-console.log(updatedPayload);
 ```
 
 #### Result
