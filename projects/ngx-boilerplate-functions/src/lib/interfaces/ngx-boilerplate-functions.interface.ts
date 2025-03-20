@@ -19,6 +19,11 @@ export interface IFormFieldInfo {
   dateFormat?: string;
   mappedKey?: string;
 }
+export class InitializeFormGroupInput {
+  name: string;
+  value?: any;
+  validations?: ValidatorFn[];
+}
 // export class FormFieldInfo implements IFormFieldInfo {
 //   name: string;
 //   validations?: ValidatorFn[];
