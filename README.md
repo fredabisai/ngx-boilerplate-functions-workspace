@@ -619,7 +619,45 @@ export class TestingComponent {
 
 ---
 
+### 16. `getFormGroupErrorMessages`
 
+#### Description
+Get error messages from FormGroup or UntypedFormGroup.
+
+#### Parameters
+- `formGroup: FormGroup | UntypedFormGroup`
+
+#### Example
+```typescript
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required, Validators.email]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  getFormGroupErrorMessages(): boolean {
+    const errors = this.formService.getFormGroupErrorMessages(this.form);
+    console.log(errors)
+  }
+}
+```
+```json
+  {
+    "email": ["Email is required", "Email should be valid email"],
+     "password": ["Password is required"]
+  }
+```
+
+---
 
 ## Contributing
 Feel free to submit issues or pull requests on GitHub to improve the package.
