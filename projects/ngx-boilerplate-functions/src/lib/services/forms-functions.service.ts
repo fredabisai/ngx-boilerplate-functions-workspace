@@ -15,9 +15,8 @@ import {
   DisableFieldInput,
   CommonFieldInput,
   FormGroupValidationInput,
-  IFormFieldInfo,
   IFormsFunctionsService,
-  InitializeFormGroupInput, RemoveFormGroupValidationInput, ResetFormGroupInput, FormatFieldInput, MappedKeysInput
+  InitializeFormGroupInput, RemoveFormGroupValidationInput, FormatFieldInput, MappedKeysInput
 } from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
