@@ -308,7 +308,13 @@ Patches values to a form group, optionally mapping field names.
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
 - `data: any`
-- `mappedKeys?: IFormFieldInfo[]`
+- `mappedKeys?: MappedKeysInput[]`
+```typescript
+export class MappedKeysInput implements IFormFieldInfo {
+  name: string;
+  mappedKey?: string;
+}
+```
 
 #### Example
 ```typescript
@@ -650,6 +656,7 @@ export class TestingComponent {
   }
 }
 ```
+#### Result
 ```json
   {
     "email": ["Email is required", "Email should be valid email"],
@@ -658,6 +665,58 @@ export class TestingComponent {
 ```
 
 ---
+
+### 17. `formatPayloadForSubmission`
+
+#### Description
+Formats to specified type or format, assigns value and removes specific fields in the form payload before submission.
+
+#### Parameters
+- `formGroup: FormGroup | UntypedFormGroup`
+- `fieldsToFormat: FormatFieldInput[]`
+```typescript
+export class FormatFieldInput implements IFormFieldInfo {
+  name: string;
+  formatType?:  'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
+  dateFormat?: string;
+  value?: any;
+}
+```
+
+#### Example
+```typescript
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, FormatFieldInput} from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      name: ['Donald Olmo', [Validators.required]],
+      address: ['Portland', [Validators.required]],
+      year: [1990, [Validators.required]]
+    })
+  }
+  formatPayloadForSubmission() {
+    const fieldsToFormat: FormatFieldInput[] = [{name: 'year', formatType: 'string'}]
+    const updatedPayload = formService.formatPayloadForSubmission(this.form, fieldsToFormat);
+    console.log(updatedPayload);
+  }
+}
+```
+
+#### Result
+
+```json
+{
+  "name": "Donald Olmo",
+  "email": "user@example.com",
+  "year": "1990"
+}
+```
 
 ## Contributing
 Feel free to submit issues or pull requests on GitHub to improve the package.
