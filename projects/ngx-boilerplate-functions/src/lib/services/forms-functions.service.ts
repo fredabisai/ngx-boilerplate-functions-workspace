@@ -250,10 +250,6 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     if(!control || !controlName || !form) {
       return;
     }
-    // if((PackageUtils.isFormGroup(form) && PackageUtils.isUntypedFormControl(control)) ||
-    //   (PackageUtils.isUntypedFormGroup(form) && PackageUtils.isFormControl(control))) {
-    //   return;
-    // }
     form.addControl(controlName, control);
   }
 
