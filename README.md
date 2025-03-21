@@ -1,20 +1,20 @@
-# ngx-form-boilerplate
+# ngx-boilerplate-functions
 
 ## Overview
-**ngx-form-boilerplate** is a utility package designed to simplify form handling in Angular applications. It provides helper functions for managing `FormGroup` and `FormControl` operations efficiently.
+**ngx-boilerplate-functions**  is a general utility package for Angular applications. It provides various helper functions to streamline development. Currently, it has started with form handling, offering efficient utilities for managing `FormGroup` and `FormControl` operations..
 
 ## Installation
 
 To install the package, use npm or yarn:
 
 ```sh
-npm install ngx-form-boilerplate
+npm install ngx-boilerplate-functions
 ```
 
 or
 
 ```sh
-yarn add ngx-form-boilerplate
+yarn add ngx-boilerplate-functions
 ```
 
 ## Usage
