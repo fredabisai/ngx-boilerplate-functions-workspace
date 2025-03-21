@@ -1,4 +1,11 @@
-import {FormBuilder, FormGroup, UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup
+} from "@angular/forms";
 import {DatePipe} from "@angular/common";
 
 export class PackageUtils {
@@ -16,6 +23,12 @@ export class PackageUtils {
   }
   static isUntypedFormBuilder(obj: any): obj is UntypedFormBuilder {
     return obj instanceof UntypedFormBuilder;
+  }
+  static isFormControl(obj: any): obj is FormControl {
+    return obj instanceof FormControl;
+  }
+  static isUntypedFormControl(obj: any): obj is UntypedFormControl {
+    return obj instanceof UntypedFormControl;
   }
   static removeKeyFromObject(obj: any, key: string): any {
     if(obj.hasOwnProperty(key)) {
@@ -42,7 +55,7 @@ export class PackageUtils {
         obj = {...obj, [name]: this.datePipe.transform(obj[name], format)};
       }
       return obj;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Unable to format date format :: ${e?.message}`);
     }
   }
@@ -69,6 +82,12 @@ export class PackageUtils {
       }
     }
     return obj;
+  }
+  static addFieldToObject(obj: any, name: string, value: any): any {
+    if(!obj || !name || typeof obj !== 'object') {
+      return obj;
+    }
+    return {...obj, [name]: value};
   }
 
 }
