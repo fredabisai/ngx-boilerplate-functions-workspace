@@ -15,9 +15,8 @@ import {
   DisableFieldInput,
   CommonFieldInput,
   FormGroupValidationInput,
-  IFormFieldInfo,
   IFormsFunctionsService,
-  InitializeFormGroupInput, RemoveFormGroupValidationInput, ResetFormGroupInput, FormatFieldInput, MappedKeysInput
+  InitializeFormGroupInput, RemoveFormGroupValidationInput, FormatFieldInput, MappedKeysInput
 } from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
@@ -250,10 +249,6 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
     if(!control || !controlName || !form) {
       return;
     }
-    // if((PackageUtils.isFormGroup(form) && PackageUtils.isUntypedFormControl(control)) ||
-    //   (PackageUtils.isUntypedFormGroup(form) && PackageUtils.isFormControl(control))) {
-    //   return;
-    // }
     form.addControl(controlName, control);
   }
 

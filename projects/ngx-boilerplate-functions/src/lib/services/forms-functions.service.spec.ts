@@ -183,13 +183,10 @@ describe('FormsFunctionsService', () => {
   });
 
   it('[changeFormControlFields] should remove fields from a FormGroup', () => {
-    console.log(form?.value)
     form.addControl('fieldToRemove', new FormControl('toBeRemoved'));
-    console.log(form?.value)
     const fieldsToRemove = [{ name: 'fieldToRemove', emitEvent: false }];
 
     service.changeFormControlFields(form, [], fieldsToRemove);
-    console.log(form?.value)
 
     expect(form.contains('fieldToRemove')).toBe(false);
   });
@@ -297,7 +294,7 @@ describe('initializeFormGroup', () => {
   it('should create a FormGroup with fields and default values', () => {
     const fields = [
       { name: 'username', value: 'testuser' },
-      { name: 'email', defaultValue: 'user@example.com' }
+      { name: 'email', value: 'user@example.com' }
     ];
     const formGroup = service.initializeFormGroup(formBuilder, fields) as FormGroup;
 
@@ -317,7 +314,7 @@ describe('initializeFormGroup', () => {
   it('should handle missing field values by falling back to defaultValue or null', () => {
     const fields = [
       { name: 'firstName' },
-      { name: 'lastName', defaultValue: 'Doe' }
+      { name: 'lastName', value: 'Doe' }
     ];
     const formGroup = service.initializeFormGroup(formBuilder, fields) as FormGroup;
 
