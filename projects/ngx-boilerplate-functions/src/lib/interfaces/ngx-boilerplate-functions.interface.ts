@@ -51,17 +51,17 @@ export class MappedKeysInput implements IFormFieldInfo {
   mappedKey?: string;
 }
 export interface IFormsFunctionsService {
-  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void;
-  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: IFormFieldInfo[]): void;
-  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: IFormFieldInfo[],
+  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormGroupValidationInput[]): void;
+  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: RemoveFormGroupValidationInput[]): void;
+  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: CommonFieldInput[],
                                  fieldsToRemove: string[]): any;
-  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: IFormFieldInfo[]): void;
-  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: IFormFieldInfo[]): void;
-  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: IFormFieldInfo[],
+  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: DisableFieldInput[]): void;
+  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: CommonFieldInput[]): void;
+  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: InitializeFormGroupInput[],
                           fieldsToRemove: {name: string, emitEvent?: boolean}[]): void;
   checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string,
                             matchingControlName: string): void;
-  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: IFormFieldInfo[]): FormGroup | undefined;
+  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: InitializeFormGroupInput[]): FormGroup | undefined;
   resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: IFormFieldInfo[]): void;
   getFormControlErrorMessage(control: FormControl | UntypedFormControl,
                              errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength'
@@ -69,9 +69,9 @@ export interface IFormsFunctionsService {
   isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean | undefined;
   isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean;
   getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | {} | undefined;
-  formatPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: IFormFieldInfo[]): any;
+  formatPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormatFieldInput[]): any;
   patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any,
-                       mappedKeys?: IFormFieldInfo[]): FormGroup | UntypedFormGroup;
+                       mappedKeys?: MappedKeysInput[]): FormGroup | UntypedFormGroup;
   markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void;
   addFormControl(form: FormGroup | UntypedFormGroup, controlName: string,
                  control: FormControl | UntypedFormGroup): void;
