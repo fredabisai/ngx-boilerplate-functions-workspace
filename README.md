@@ -216,7 +216,6 @@ export class TestingComponent {
     console.log(errorMessage)
   }
 }
-const errorMessage = this.formService.getFormControlErrorMessage(this.form.get('email'), 'required');
 ```
 
 ---
@@ -233,7 +232,26 @@ Checks if the entire form group is valid.
 
 #### Example
 ```typescript
-const isValid = this.formService.isFormGroupValid(this.form);
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  isFormControlValidWithControlMark(): boolean {
+    const isValid = this.formService.isFormGroupValid(this.form);
+    console.log(isValid)
+  }
+}
 ```
 
 ---
@@ -539,7 +557,7 @@ export class InitializeFormGroupInput implements IFormFieldInfo {
   validations?: ValidatorFn[];
 }
 ```
-
+---
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
@@ -565,6 +583,43 @@ export class TestingComponent {
   }
 }
 ```
+---
+### 16. `isFormControlValidWithControlMark`
+
+#### Description
+Check form control is valid using control marks.
+
+#### Parameters
+- `control: FormControl | UntypedFormControl`
+- `controlMarks: ('dirty' | 'pristine' | 'touched' | 'invalid')[]`
+
+#### Example
+```typescript
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  isFormControlValidWithControlMark(): boolean {
+    const isValid = this.formService.isFormControlValidWithControlMark(this.form.get('email'), ['dirty', 'pristine']);
+    console.log(isValid)
+  }
+}
+```
+
+---
+
+
 
 ## Contributing
 Feel free to submit issues or pull requests on GitHub to improve the package.
