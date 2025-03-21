@@ -138,7 +138,7 @@ export class TestingComponent {
       { name: 'name'},
       { name: 'address', value: '-'}
     ]
-    formService.resetFormGroup(this.form, defaultFields);
+    this.formService.resetFormGroup(this.form, defaultFields);
     console.log(this.form.value)
   }
 }
@@ -265,7 +265,30 @@ Marks all form controls as touched.
 
 #### Example
 ```typescript
-this.formService.markAllControlsAsTouched(this.form);
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  markAllControlsAsTouched() {
+    this.formService.markAllControlsAsTouched(this.form);
+    console.log(this.form.get('email')?.touched)
+  }
+}
+```
+#### Result
+```typescript
+true
 ```
 
 ---
@@ -281,7 +304,32 @@ Dynamically adds a form control to an existing form group.
 
 #### Example
 ```typescript
-this.formService.addFormControl(this.form, 'newField', new FormControl('value'));
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  addFormControl() {
+    this.formService.addFormControl(this.form, 'address', new FormControl('Dar es Salaam'));
+    console.log(this.form.contains('address'));
+    console.log(this.form.get('address').value);
+  }
+}
+```
+#### Result
+```text
+ true
+ Dar es Salaam
 ```
 
 ---
@@ -296,14 +344,37 @@ Removes a form control from the form group.
 
 #### Example
 ```typescript
-this.formService.removeFormControl(this.form, 'username');
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService } from "ngx-boilerplate-functions";
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder
+  ) {
+    this.form = this.fb.group({
+      email: [null, [Validators.required]],
+      password: [null, [Validators.required]],
+    })
+  }
+
+  removeFormControl() {
+    this.formService.removeFormControl(this.form, 'password');
+    console.log(this.form.contains('password'));
+  }
+}
+```
+#### Result
+```typescript
+ false
 ```
 
 ---
 ### 9. `patchFormGroupValues`
 
 #### Description
-Patches values to a form group, optionally mapping field names.
+Patches values to a form group, optionally mapping field names using passed payload.
 
 #### Parameters
 - `formGroup: FormGroup | UntypedFormGroup`
@@ -318,7 +389,42 @@ export class MappedKeysInput implements IFormFieldInfo {
 
 #### Example
 ```typescript
-this.formService.patchFormGroupValues(this.form, { username: 'JohnDoe' });
+import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormsFunctionsService, MappedKeysInput} from "ngx-boilerplate-functions";
+
+
+export class TestingComponent {
+  form: UntypedFormGroup;
+
+  constructor(private formService: FormsFunctionsService,
+              private fb: UntypedFormBuilder) {
+    this.form = this.fb.group({
+      email: [null],
+      name: [null],
+      address: [null]
+    })
+  }
+
+  patchFormGroupValues() {
+    const data = {
+      myEmail: 'user@example.com',
+      name: 'New User',
+      address: 'Dar es Salaam'
+    }
+  
+    const mappedKeys: MappedKeysInput[] = [{name: 'email', mappedKey: 'myEmail'];
+    this.formService.patchFormGroupValues(this.form, data, mappedKeys);
+    console.log(this.form.value);
+  }
+}
+```
+#### Result
+```json
+  {
+  "email": "user@example.com",
+  "name": "New User",
+  "address": "Dar es Salaam"
+}
 ```
 
 ### 10. `setFormGroupValidations`
@@ -359,7 +465,7 @@ export class TestingComponent {
       {name: 'email', validations: [Validators.required, Validators.email]},
       {name: 'password', validations: [Validators.required, Validators.minLength(6)]}
     ]
-    formService.setFormGroupValidations(this.form, fields);
+    this.formService.setFormGroupValidations(this.form, fields);
   }
 }
 ```
@@ -402,7 +508,7 @@ export class TestingComponent {
       {name: 'email', defaultValue: 'user@example.com'},
       {name: 'password'}
     ]
-    formService.removeFormGroupValidations(this.form, fields);
+    this.formService.removeFormGroupValidations(this.form, fields);
   }
 }
 ```
@@ -443,7 +549,7 @@ export class TestingComponent {
   addAndRemoveFieldsOnSubmission() {
     const fieldsToAdd: CommonFieldInput[] = [{name: 'email', value: 'user@example.com'}]
     const fieldsToRemove = ['address']
-    const updatedPayload = formService.addAndRemoveFieldsOnSubmission(this.form, fieldsToAdd, fieldsToRemove);
+    const updatedPayload = this.formService.addAndRemoveFieldsOnSubmission(this.form, fieldsToAdd, fieldsToRemove);
     console.log(updatedPayload);
   }
 }
@@ -491,7 +597,7 @@ export class TestingComponent {
       { name: 'name'},
       { name: 'address', options: { onlySelf: true, emitEvent: true }}
     ]
-    formService.disableFields(this.form, fieldsToDisable);
+    this.formService.disableFields(this.form, fieldsToDisable);
   }
 }
 ```
@@ -536,7 +642,7 @@ export class TestingComponent {
   patchValuesToFields() {
     const fieldsToSet: CommonFieldInput[] = [{name: 'name', value: 'John Doe'}, 
                                              {name: 'address', value: 'Dar es Salaam'}]
-    formService.patchValuesToFields(this.form, fieldsToSet);
+    this.formService.patchValuesToFields(this.form, fieldsToSet);
     console.log(this.form.value);
   }
 }
@@ -584,7 +690,7 @@ export class TestingComponent {
     const fieldsToAdd: InitializeFormGroupInput[] = [{name: 'email', value: 'user@example.com', validations: [Validators.required]}, 
                                              {name: 'address', value: 'Dar es Salaam'}]
     const fieldsToRemove: {name: string, emitEvent?: boolean}[] = [{ name: 'address', emitEvent: true }]
-    formService.changeFormControlFields(this.form, fieldsToAdd, fieldsToRemove);
+    this.formService.changeFormControlFields(this.form, fieldsToAdd, fieldsToRemove);
     console.log(this.form.value);
   }
 }
@@ -625,7 +731,7 @@ export class TestingComponent {
 
 ---
 
-### 16. `getFormGroupErrorMessages`
+### 17. `getFormGroupErrorMessages`
 
 #### Description
 Get error messages from FormGroup or UntypedFormGroup.
@@ -666,7 +772,7 @@ export class TestingComponent {
 
 ---
 
-### 17. `formatPayloadForSubmission`
+### 18. `formatPayloadForSubmission`
 
 #### Description
 Formats to specified type or format, assigns value and removes specific fields in the form payload before submission.
@@ -702,7 +808,7 @@ export class TestingComponent {
   }
   formatPayloadForSubmission() {
     const fieldsToFormat: FormatFieldInput[] = [{name: 'year', formatType: 'string'}]
-    const updatedPayload = formService.formatPayloadForSubmission(this.form, fieldsToFormat);
+    const updatedPayload = this.formService.formatPayloadForSubmission(this.form, fieldsToFormat);
     console.log(updatedPayload);
   }
 }
