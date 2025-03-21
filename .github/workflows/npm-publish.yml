@@ -37,7 +37,7 @@ jobs:
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Run tests
-        run: npm run test $LIBRARY_NAME -- --no-watch --no-progress --browsers=ChromeHeadless
+        run: npx jest --config projects/$LIBRARY_NAME/jest.config.js  -- --no-watch --no-progress --browsers=ChromeHeadless
 
       - name: Build Angular Library
         run: npm run build $LIBRARY_NAME
