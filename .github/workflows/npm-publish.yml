@@ -31,8 +31,8 @@ jobs:
       - name: Extract library name and version from tag
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
-          LIBRARY_NAME=$(echo $TAG_NAME | cut -d '-' -f1)
-          VERSION=$(echo $TAG_NAME | cut -d 'v' -f2)
+          LIBRARY_NAME=$(echo $TAG_NAME | sed 's/-v[0-9].*//')  # Extract everything before -v
+          VERSION=$(echo $TAG_NAME | grep -oP '(?<=-v)[0-9]+\.[0-9]+\.[0-9]+')  # Extract version after -v
           echo "LIBRARY_NAME=$LIBRARY_NAME" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
