@@ -1,0 +1,54 @@
+name: Publish Angular Library to NPM
+
+on:
+  push:
+    tags:
+      - "ngx-boilerplate-functions-v*"  # Triggers when a tag starting with 'form-v' is created
+
+env:
+  NODE_VERSION: 18  # Set the Node.js version
+
+jobs:
+  publish:
+    name: Build & Publish to NPM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures all tags are fetched
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Extract library name and version from tag
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          LIBRARY_NAME=$(echo $TAG_NAME | cut -d '-' -f1)
+          VERSION=$(echo $TAG_NAME | cut -d 'v' -f2)
+          echo "LIBRARY_NAME=$LIBRARY_NAME" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Run tests
+        run: npm run test $LIBRARY_NAME -- --no-watch --no-progress --browsers=ChromeHeadless
+
+      - name: Build Angular Library
+        run: npm run build $LIBRARY_NAME
+
+      - name: Update package.json version
+        run: npm version --no-git-tag-version $PACKAGE_VERSION
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Clean up
+        run: git reset --hard
