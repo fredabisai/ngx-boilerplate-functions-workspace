@@ -71,7 +71,7 @@ Initializes a `FormGroup` or `UntypedFormGroup` based on the provided fields.
 - `formBuilder: FormBuilder | UntypedFormBuilder` - The form builder instance.
 - `fields: InitializeFormGroupInput[]` - An array of field definitions. 
 ```typescript
-export class InitializeFormGroupInput {
+export type InitializeFormGroupInput = {
   name: string;
   value?: any;
   validations?: ValidatorFn[];
@@ -111,7 +111,7 @@ Resets the form to its initial state or with provided default field values.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `defaultFields?: CommonFieldInput[]`
 ```typescript
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
@@ -381,7 +381,7 @@ Patches values to a form group, optionally mapping field names using passed payl
 - `data: any`
 - `mappedKeys?: MappedKeysInput[]`
 ```typescript
-export class MappedKeysInput implements IFormFieldInfo {
+export type MappedKeysInput = {
   name: string;
   mappedKey?: string;
 }
@@ -436,7 +436,7 @@ Dynamically sets validation rules for form controls.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fields: FormGroupValidationInput[]`
 ```typescript
-export class FormGroupValidationInput implements IFormFieldInfo {
+export type FormGroupValidationInput = {
   name: string;
   validations?: ValidatorFn[];
 }
@@ -479,7 +479,7 @@ Removes validations from specified form controls and resets their values to defa
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fields: RemoveFormGroupValidationInput[]`
 ```typescript
-export class RemoveFormGroupValidationInput implements IFormFieldInfo {
+export type RemoveFormGroupValidationInput = {
   name: string;
   defaultValue?: any;
 }
@@ -524,7 +524,7 @@ Adds or removes specific fields in the form payload before submission.
 - `fieldsToAdd: CommonFieldInput[]`
 - `fieldsToRemove: string[]`
 ```typescript
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
@@ -570,7 +570,7 @@ Disable specified field in a FormGroup or UntypedFormGroup.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToDisable: DisableFieldInput[]`
 ```typescript
-export class DisableFieldInput implements IFormFieldInfo {
+export type DisableFieldInput = {
   name: string;
   options?: { onlySelf?: boolean; emitEvent?: boolean;};
 }
@@ -617,7 +617,7 @@ Set values to fields in the FormGroup / UntypedFormGroup.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToSet: CommonFieldInput[]`
 ```typescript
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
@@ -663,7 +663,7 @@ Add or/and remove fields in the FormGroup / UntypedFormGroup.
 - `fieldsToAdd: InitializeFormGroupInput[]`
 - `fieldsToRemove: {name: string, emitEvent?: boolean}[]`
 ```typescript
-export class InitializeFormGroupInput implements IFormFieldInfo {
+export type InitializeFormGroupInput = {
   name: string;
   value?: any;
   validations?: ValidatorFn[];
@@ -781,7 +781,7 @@ Formats to specified type or format, assigns value and removes specific fields i
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToFormat: FormatFieldInput[]`
 ```typescript
-export class FormatFieldInput implements IFormFieldInfo {
+export type FormatFieldInput = {
   name: string;
   formatType?:  'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
   dateFormat?: string;
