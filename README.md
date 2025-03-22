@@ -71,7 +71,7 @@ Initializes a `FormGroup` or `UntypedFormGroup` based on the provided fields.
 - `formBuilder: FormBuilder | UntypedFormBuilder` - The form builder instance.
 - `fields: InitializeFormGroupInput[]` - An array of field definitions. 
 ```typescript
-export class InitializeFormGroupInput {
+export type InitializeFormGroupInput = {
   name: string;
   value?: any;
   validations?: ValidatorFn[];
