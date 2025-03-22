@@ -19,34 +19,34 @@ export interface IFormFieldInfo {
   dateFormat?: string;
   mappedKey?: string;
 }
-export class InitializeFormGroupInput implements IFormFieldInfo {
+export type InitializeFormGroupInput =  {
   name: string;
   value?: any;
   validations?: ValidatorFn[];
 }
-export class FormGroupValidationInput implements IFormFieldInfo {
+export type FormGroupValidationInput = {
   name: string;
   validations?: ValidatorFn[];
 }
-export class RemoveFormGroupValidationInput implements IFormFieldInfo {
+export type RemoveFormGroupValidationInput = {
   name: string;
   defaultValue?: any;
 }
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
-export class DisableFieldInput implements IFormFieldInfo {
+export type DisableFieldInput = {
   name: string;
   options?: { onlySelf?: boolean; emitEvent?: boolean;};
 }
-export class FormatFieldInput implements IFormFieldInfo {
+export type FormatFieldInput = {
   name: string;
   formatType?:  'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
   dateFormat?: string;
   value?: any;
 }
-export class MappedKeysInput implements IFormFieldInfo {
+export type MappedKeysInput = {
   name: string;
   mappedKey?: string;
 }
