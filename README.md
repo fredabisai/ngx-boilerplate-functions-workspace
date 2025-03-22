@@ -524,7 +524,7 @@ Adds or removes specific fields in the form payload before submission.
 - `fieldsToAdd: CommonFieldInput[]`
 - `fieldsToRemove: string[]`
 ```typescript
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
@@ -570,7 +570,7 @@ Disable specified field in a FormGroup or UntypedFormGroup.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToDisable: DisableFieldInput[]`
 ```typescript
-export class DisableFieldInput implements IFormFieldInfo {
+export type DisableFieldInput = {
   name: string;
   options?: { onlySelf?: boolean; emitEvent?: boolean;};
 }
@@ -617,7 +617,7 @@ Set values to fields in the FormGroup / UntypedFormGroup.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToSet: CommonFieldInput[]`
 ```typescript
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
