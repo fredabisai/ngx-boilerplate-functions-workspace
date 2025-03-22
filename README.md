@@ -111,7 +111,7 @@ Resets the form to its initial state or with provided default field values.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `defaultFields?: CommonFieldInput[]`
 ```typescript
-export type CommonFieldInput ={
+export type CommonFieldInput = {
   name: string;
   value?: any;
 }
@@ -381,7 +381,7 @@ Patches values to a form group, optionally mapping field names using passed payl
 - `data: any`
 - `mappedKeys?: MappedKeysInput[]`
 ```typescript
-export class MappedKeysInput implements IFormFieldInfo {
+export type MappedKeysInput = {
   name: string;
   mappedKey?: string;
 }
