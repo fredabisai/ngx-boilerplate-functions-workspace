@@ -1,7 +1,7 @@
 # ngx-boilerplate-functions
 
 ## Overview
-**ngx-boilerplate-functions**  is a general utility package for Angular applications. It provides various helper functions to streamline development. Currently, it has started with form handling, offering efficient utilities for managing `FormGroup` and `FormControl` operations..
+**ngx-boilerplate-functions**  is a utility package designed to simplify form handling in Angular applications. It provides helper functions for managing `FormGroup` and `FormControl` operations efficiently..
 
 ## Installation
 
@@ -84,7 +84,7 @@ export type InitializeFormGroupInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, InitializeFormGroupInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, InitializeFormGroupInput} from "@ngx-boilerplate-functions/forms";
 
 
 export class TestingComponent {
@@ -120,7 +120,7 @@ export type CommonFieldInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, CommonFieldInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, CommonFieldInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -158,7 +158,7 @@ Validates if two form controls match (e.g., password confirmation).
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -197,7 +197,7 @@ Retrieves error messages for a specific form control.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -233,7 +233,7 @@ Checks if the entire form group is valid.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -266,7 +266,7 @@ Marks all form controls as touched.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -305,7 +305,7 @@ Dynamically adds a form control to an existing form group.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -345,7 +345,7 @@ Removes a form control from the form group.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -390,7 +390,7 @@ export type MappedKeysInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, MappedKeysInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, MappedKeysInput} from "@ngx-boilerplate-functions/forms";
 
 
 export class TestingComponent {
@@ -446,7 +446,7 @@ export type FormGroupValidationInput = {
 
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, FormGroupValidationInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, FormGroupValidationInput} from "@ngx-boilerplate-functions/forms";
 
 
 export class TestingComponent {
@@ -489,7 +489,7 @@ export type RemoveFormGroupValidationInput = {
 
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, RemoveFormGroupValidationInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, RemoveFormGroupValidationInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -533,7 +533,7 @@ export type CommonFieldInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, CommonFieldInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, CommonFieldInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -579,7 +579,7 @@ export type DisableFieldInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, DisableFieldInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, DisableFieldInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -626,7 +626,7 @@ export type CommonFieldInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, CommonFieldInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, CommonFieldInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -673,7 +673,7 @@ export type InitializeFormGroupInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, InitializeFormGroupInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, InitializeFormGroupInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -708,7 +708,7 @@ Check form control is valid using control marks.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -742,7 +742,7 @@ Get error messages from FormGroup or UntypedFormGroup.
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "ngx-boilerplate-functions";
+import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
@@ -792,7 +792,7 @@ export type FormatFieldInput = {
 #### Example
 ```typescript
 import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, FormatFieldInput} from "ngx-boilerplate-functions";
+import {FormsFunctionsService, FormatFieldInput} from "@ngx-boilerplate-functions/forms";
 
 export class TestingComponent {
   form: UntypedFormGroup;
