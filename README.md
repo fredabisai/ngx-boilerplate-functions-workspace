@@ -111,7 +111,7 @@ Resets the form to its initial state or with provided default field values.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `defaultFields?: CommonFieldInput[]`
 ```typescript
-export class CommonFieldInput implements IFormFieldInfo {
+export type CommonFieldInput ={
   name: string;
   value?: any;
 }
