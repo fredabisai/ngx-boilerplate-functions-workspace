@@ -57,6 +57,9 @@ jobs:
           cd dist/$LIBRARY_NAME
           npm pkg set name="@$LIBRARY_NAME_TO_PUBLISH"  # Update the package name
           npm version --no-git-tag-version $PACKAGE_VERSION  # Update the version
+      - name: Log in to npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Publish to NPM
         run: |
