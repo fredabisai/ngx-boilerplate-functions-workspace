@@ -663,7 +663,7 @@ Add or/and remove fields in the FormGroup / UntypedFormGroup.
 - `fieldsToAdd: InitializeFormGroupInput[]`
 - `fieldsToRemove: {name: string, emitEvent?: boolean}[]`
 ```typescript
-export class InitializeFormGroupInput implements IFormFieldInfo {
+export type InitializeFormGroupInput = {
   name: string;
   value?: any;
   validations?: ValidatorFn[];
