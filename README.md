@@ -479,7 +479,7 @@ Removes validations from specified form controls and resets their values to defa
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fields: RemoveFormGroupValidationInput[]`
 ```typescript
-export class RemoveFormGroupValidationInput implements IFormFieldInfo {
+export type RemoveFormGroupValidationInput = {
   name: string;
   defaultValue?: any;
 }
