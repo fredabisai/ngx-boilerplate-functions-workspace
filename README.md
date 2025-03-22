@@ -436,7 +436,7 @@ Dynamically sets validation rules for form controls.
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fields: FormGroupValidationInput[]`
 ```typescript
-export class FormGroupValidationInput implements IFormFieldInfo {
+export type FormGroupValidationInput = {
   name: string;
   validations?: ValidatorFn[];
 }
