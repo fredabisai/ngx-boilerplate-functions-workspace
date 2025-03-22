@@ -42,13 +42,17 @@ jobs:
       - name: Build Angular Library
         run: npm run build $LIBRARY_NAME
 
-      - name: Update package.json version
-        run: npm version --no-git-tag-version $PACKAGE_VERSION
+      - name: Update package.json version in dist
+        run: |
+           cd dist/$LIBRARY_NAME
+           npm version --no-git-tag-version $PACKAGE_VERSION
 
       - name: Publish to NPM
-        run: npm publish --access public
+        run: |
+           cd dist/$LIBRARY_NAME
+           npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Clean up
         run: git reset --hard
