@@ -33,31 +33,37 @@ jobs:
           TAG_NAME=${GITHUB_REF#refs/tags/}
           LIBRARY_NAME=$(echo $TAG_NAME | sed 's/-v[0-9].*//')  # Extract everything before -v
           if [[ $TAG_NAME == ngx-boilerplate-functions* ]]; then
-             LIBRARY_NAME_TO_PUBLISH="ngx-boilerplate-functions/forms"
+             LIBRARY_NAME="ngx-boilerplate-functions"  # Set LIBRARY_NAME to the folder name
+             LIBRARY_NAME_TO_PUBLISH="ngx-boilerplate-functions/forms"  # Set LIBRARY_NAME_TO_PUBLISH
           else
-             LIBRARY_NAME_TO_PUBLISH=$LIBRARY_NAME
+             LIBRARY_NAME_TO_PUBLISH=$LIBRARY_NAME  # Set LIBRARY_NAME_TO_PUBLISH to LIBRARY_NAME
           fi
           VERSION=$(echo $TAG_NAME | grep -oP '(?<=-v)[0-9]+\.[0-9]+\.[0-9]+')  # Extract version after -v
-          echo "LIBRARY_NAME=$LIBRARY_NAME_TO_PUBLISH" >> $GITHUB_ENV
+          echo "LIBRARY_NAME=$LIBRARY_NAME" >> $GITHUB_ENV
+          echo "LIBRARY_NAME_TO_PUBLISH=$LIBRARY_NAME_TO_PUBLISH" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
-#      - name: Run tests
-#        run: npx jest --config projects/$LIBRARY_NAME/jest.config.js  -- --no-watch --no-progress --browsers=ChromeHeadless --passWithNoTests
+      - name: Debug library name and version
+        run: |
+          echo "LIBRARY_NAME: $LIBRARY_NAME"
+          echo "LIBRARY_NAME_TO_PUBLISH: $LIBRARY_NAME_TO_PUBLISH"
+          echo "PACKAGE_VERSION: $PACKAGE_VERSION"
 
       - name: Build Angular Library
-        run: npm run build $LIBRARY_NAME
+        run: npm run build $LIBRARY_NAME  # Use LIBRARY_NAME for the build step
 
-      - name: Update package.json version in dist
+      - name: Update package.json version and name in dist
         run: |
-           cd dist/$LIBRARY_NAME
-           npm version --no-git-tag-version $PACKAGE_VERSION
+          cd dist/$LIBRARY_NAME
+          npm pkg set name="@$LIBRARY_NAME_TO_PUBLISH"  # Update the package name
+          npm version --no-git-tag-version $PACKAGE_VERSION  # Update the version
 
       - name: Publish to NPM
         run: |
-           cd dist/$LIBRARY_NAME
-           npm publish --access public
+          cd dist/$LIBRARY_NAME
+          npm publish --access public
         env:
-           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Clean up
         run: git reset --hard
