@@ -36,6 +36,7 @@ jobs:
              LIBRARY_NAME_TO_PUBLISH="ngx-boilerplate-functions/forms"
           else
              LIBRARY_NAME_TO_PUBLISH=$LIBRARY_NAME
+          fi
           VERSION=$(echo $TAG_NAME | grep -oP '(?<=-v)[0-9]+\.[0-9]+\.[0-9]+')  # Extract version after -v
           echo "LIBRARY_NAME=$LIBRARY_NAME_TO_PUBLISH" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
