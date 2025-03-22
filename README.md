@@ -781,7 +781,7 @@ Formats to specified type or format, assigns value and removes specific fields i
 - `formGroup: FormGroup | UntypedFormGroup`
 - `fieldsToFormat: FormatFieldInput[]`
 ```typescript
-export class FormatFieldInput implements IFormFieldInfo {
+export type FormatFieldInput = {
   name: string;
   formatType?:  'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
   dateFormat?: string;
