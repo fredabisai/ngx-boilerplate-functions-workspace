@@ -32,22 +32,6 @@ Inject the service into your component:
 constructor(private formService: FormsFunctionsService) {}
 ```
 
-## Interface: `IFormFieldInfo`
-This interface defines the structure for form fields.
-
-```typescript
-export interface IFormFieldInfo {
-  name: string;
-  validations?: ValidatorFn[];
-  defaultValue?: any;
-  value?: any;
-  options?: { onlySelf?: boolean; emitEvent?: boolean };
-  formatType?: 'string' | 'number' | 'float' | 'boolean' | 'date' | 'remove' | 'add';
-  dateFormat?: string;
-  mappedKey?: string;
-}
-```
-
 ### Description of Properties
 - `name`: The field name (required).
 - `validations?`: An array of Angular validation functions.
