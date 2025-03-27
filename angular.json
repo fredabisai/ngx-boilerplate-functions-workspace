@@ -36,43 +36,38 @@
         }
       }
     },
-    "boilerplate-testing": {
+    "boilerplate-testing-app": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "projects/boilerplate-testing",
-      "sourceRoot": "projects/boilerplate-testing/src",
+      "root": "projects/boilerplate-testing-app",
+      "sourceRoot": "projects/boilerplate-testing-app/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/boilerplate-testing",
-            "index": "projects/boilerplate-testing/src/index.html",
-            "browser": "projects/boilerplate-testing/src/main.ts",
+            "outputPath": "dist/boilerplate-testing-app",
+            "index": "projects/boilerplate-testing-app/src/index.html",
+            "browser": "projects/boilerplate-testing-app/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "projects/boilerplate-testing/tsconfig.app.json",
+            "tsConfig": "projects/boilerplate-testing-app/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/boilerplate-testing/public"
+                "input": "projects/boilerplate-testing-app/public"
               }
             ],
             "styles": [
-              "projects/boilerplate-testing/src/styles.scss"
+              "projects/boilerplate-testing-app/src/styles.scss"
             ],
-            "scripts": [],
-            "server": "projects/boilerplate-testing/src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "projects/boilerplate-testing/server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -84,8 +79,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"
@@ -102,10 +97,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "boilerplate-testing:build:production"
+              "buildTarget": "boilerplate-testing-app:build:production"
             },
             "development": {
-              "buildTarget": "boilerplate-testing:build:development"
+              "buildTarget": "boilerplate-testing-app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -120,16 +115,16 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "projects/boilerplate-testing/tsconfig.spec.json",
+            "tsConfig": "projects/boilerplate-testing-app/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/boilerplate-testing/public"
+                "input": "projects/boilerplate-testing-app/public"
               }
             ],
             "styles": [
-              "projects/boilerplate-testing/src/styles.scss"
+              "projects/boilerplate-testing-app/src/styles.scss"
             ],
             "scripts": []
           }
