@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:ssr:boilerplate-testing": "node dist/boilerplate-testing/server/server.mjs"
   },
   "type": "module",
   "private": false,
@@ -18,7 +19,10 @@
     "@angular/forms": "^18.1.0",
     "@angular/platform-browser": "^18.1.0",
     "@angular/platform-browser-dynamic": "^18.1.0",
+    "@angular/platform-server": "^18.1.0",
     "@angular/router": "^18.1.0",
+    "@angular/ssr": "^18.1.2",
+    "express": "^4.18.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
@@ -27,7 +31,9 @@
     "@angular-devkit/build-angular": "^18.1.2",
     "@angular/cli": "^18.1.2",
     "@angular/compiler-cli": "^18.1.0",
+    "@types/express": "^4.17.17",
     "@types/jest": "^29.5.14",
+    "@types/node": "^18.18.0",
     "jest": "^29.7.0",
     "jest-preset-angular": "^14.5.3",
     "karma-coverage": "~2.2.0",

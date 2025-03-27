@@ -9,7 +9,6 @@ import {
   Validators
 } from "@angular/forms";
 import { IFormFieldInfo } from "../interfaces/ngx-boilerplate-functions.interface";
-import {PackageUtils} from "../utils/package.utils";
 
 describe('FormsFunctionsService', () => {
   let service: FormsFunctionsService;
