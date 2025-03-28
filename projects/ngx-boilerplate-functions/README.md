@@ -23,7 +23,7 @@ yarn add @ngx-boilerplate-functions/forms
 
 ```typescript
 import { FormBuilder, FormGroup, FormControl, ValidatorFn } from '@angular/forms';
-import { IFormFieldInfo } from 'ngx-form-boilerplate';
+import { FormsFunctionsService } from 'ngx-form-boilerplate';
 ```
 
 Inject the service into your component:
