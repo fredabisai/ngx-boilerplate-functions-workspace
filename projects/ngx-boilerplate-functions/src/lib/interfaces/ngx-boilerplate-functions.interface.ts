@@ -1,13 +1,14 @@
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
   ValidatorFn
 } from "@angular/forms";
-import {FormsFunctionsService} from "../services/forms-functions.service";
+// For Angular 14+ compatibility, you could declare these as optional types
+export type UntypedFormBuilder = FormBuilder; // Fallback for Angular <14
+export type UntypedFormControl<T = any> = FormControl<T>;
+export type UntypedFormGroup<T extends { [K in keyof T]: AbstractControl<any, any> } = any> = FormGroup<T>;
 
 export interface IFormFieldInfo {
   name: string;

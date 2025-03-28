@@ -4,9 +4,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup, ValidationErrors,
+   ValidationErrors,
   ValidatorFn, Validators
 } from "@angular/forms";
 import {VERSION} from "@angular/cli";
@@ -16,7 +14,8 @@ import {
   CommonFieldInput,
   FormGroupValidationInput,
   IFormsFunctionsService,
-  InitializeFormGroupInput, RemoveFormGroupValidationInput, FormatFieldInput, MappedKeysInput
+  InitializeFormGroupInput, RemoveFormGroupValidationInput, FormatFieldInput,
+  MappedKeysInput, UntypedFormGroup, UntypedFormControl, UntypedFormBuilder
 } from "../interfaces/ngx-boilerplate-functions.interface";
 
 @Injectable({
@@ -93,14 +92,14 @@ export class FormsFunctionsService implements IFormsFunctionsService{
     if (fieldsToAdd?.length) {
       for (const field of fieldsToAdd) {
         if (field?.name && !form?.contains(field.name)) {
-          if (PackageUtils.isUntypedFormGroup(form)) {
-            form.addControl(field.name, new UntypedFormControl(field?.value ?? null, field?.validations?.length ?
-              field.validations : []));
-          }
-          if (PackageUtils.isFormGroup(form)) {
+          // if (PackageUtils.isUntypedFormGroup(form)) {
+          //   form.addControl(field.name, new UntypedFormControl(field?.value ?? null, field?.validations?.length ?
+          //     field.validations : []));
+          // }
+          // if (PackageUtils.isFormGroup(form)) {
             form.addControl(field.name, new FormControl(field?.value ?? null, field?.validations?.length ?
               field.validations : []));
-          }
+          // }
         }
       }
     }
@@ -131,17 +130,18 @@ checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: 
   }
 
   initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: InitializeFormGroupInput[]): FormGroup | UntypedFormGroup | undefined {
-        const formGroup = PackageUtils.isFormBuilder(formBuilder) ? new FormGroup({}) : new UntypedFormGroup({});
+        // const formGroup = PackageUtils.isFormBuilder(formBuilder) ? new FormGroup({}) : new UntypedFormGroup({});
+    const formGroup =  new FormGroup({} as any);
         if(!fields?.length) {
           return formGroup;
         }
         for (const field of fields) {
-           if(PackageUtils.isFormBuilder(formBuilder)) {
+           // if(PackageUtils.isFormBuilder(formBuilder)) {
              formGroup.addControl(field.name, new FormControl(field?.value ??  undefined, field?.validations ?? []));
-           }
-           if(PackageUtils.isUntypedFormBuilder(formBuilder)) {
-             formGroup.addControl(field.name, new UntypedFormControl(field?.value ??  undefined, field?.validations ?? []));
-           }
+           // }
+           // if(PackageUtils.isUntypedFormBuilder(formBuilder)) {
+           //   formGroup.addControl(field.name, new UntypedFormControl(field?.value ??  undefined, field?.validations ?? []));
+           // }
         }
         return formGroup;
   }
