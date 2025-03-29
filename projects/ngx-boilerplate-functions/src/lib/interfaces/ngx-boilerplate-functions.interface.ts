@@ -5,10 +5,6 @@ import {
   FormGroup,
   ValidatorFn
 } from "@angular/forms";
-// For Angular 14+ compatibility, you could declare these as optional types
-export type UntypedFormBuilder = FormBuilder; // Fallback for Angular <14
-export type UntypedFormControl<T = any> = FormControl<T>;
-export type UntypedFormGroup<T extends { [K in keyof T]: AbstractControl<any, any> } = any> = FormGroup<T>;
 
 export interface IFormFieldInfo {
   name: string;
@@ -52,29 +48,29 @@ export type MappedKeysInput = {
   mappedKey?: string;
 }
 export interface IFormsFunctionsService {
-  setFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: FormGroupValidationInput[]): void;
-  removeFormGroupValidations(form: FormGroup | UntypedFormGroup, fields: RemoveFormGroupValidationInput[]): void;
-  addAndRemoveFieldsOnSubmission(form: FormGroup | UntypedFormGroup, fieldsToAdd: CommonFieldInput[],
+  setFormGroupValidations(form: FormGroup | any, fields: FormGroupValidationInput[]): void;
+  removeFormGroupValidations(form: FormGroup | any, fields: RemoveFormGroupValidationInput[]): void;
+  addAndRemoveFieldsOnSubmission(form: FormGroup | any, fieldsToAdd: CommonFieldInput[],
                                  fieldsToRemove: string[]): any;
-  disableFields(form: FormGroup | UntypedFormGroup, fieldsToDisable: DisableFieldInput[]): void;
-  patchValuesToFields(form: FormGroup | UntypedFormGroup, fieldsToSet: CommonFieldInput[]): void;
-  changeFormControlFields(form: FormGroup | UntypedFormGroup, fieldsToAdd: InitializeFormGroupInput[],
+  disableFields(form: FormGroup | any, fieldsToDisable: DisableFieldInput[]): void;
+  patchValuesToFields(form: FormGroup | any, fieldsToSet: CommonFieldInput[]): void;
+  changeFormControlFields(form: FormGroup | any, fieldsToAdd: InitializeFormGroupInput[],
                           fieldsToRemove: {name: string, emitEvent?: boolean}[]): void;
-  checkIfFormControlsMatch( formGroup: FormGroup | UntypedFormGroup, controlName: string,
+  checkIfFormControlsMatch( formGroup: FormGroup | any, controlName: string,
                             matchingControlName: string): void;
-  initializeFormGroup(formBuilder: FormBuilder | UntypedFormBuilder, fields: InitializeFormGroupInput[]): FormGroup | undefined;
-  resetFormGroup(formGroup: FormGroup | UntypedFormGroup, defaultFields?: IFormFieldInfo[]): void;
-  getFormControlErrorMessage(control: FormControl | UntypedFormControl,
+  initializeFormGroup(formBuilder: FormBuilder | any, fields: InitializeFormGroupInput[]): FormGroup | undefined;
+  resetFormGroup(formGroup: FormGroup | any, defaultFields?: IFormFieldInfo[]): void;
+  getFormControlErrorMessage(control: FormControl | any,
                              errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength'
                                | 'pattern' | 'min' | 'max' | 'email'): any;
   isFormControlValidWithControlMark(control: FormControl, controlMarks: ('dirty' | 'pristine' | 'touched')[]): boolean | undefined;
-  isFormGroupValid(forGroup: FormGroup | UntypedFormGroup): boolean;
-  getFormGroupErrorMessages(forGroup: FormGroup | UntypedFormGroup): {key: string[]} | {} | undefined;
-  formatPayloadForSubmission(formGroup: FormGroup | UntypedFormGroup, fieldsToFormat: FormatFieldInput[]): any;
-  patchFormGroupValues(formGroup: FormGroup | UntypedFormGroup, data: any,
-                       mappedKeys?: MappedKeysInput[]): FormGroup | UntypedFormGroup;
-  markAllControlsAsTouched(form: FormGroup | UntypedFormGroup): void;
-  addFormControl(form: FormGroup | UntypedFormGroup, controlName: string,
-                 control: FormControl | UntypedFormGroup): void;
+  isFormGroupValid(forGroup: FormGroup | any): boolean;
+  getFormGroupErrorMessages(forGroup: FormGroup | any): {key: string[]} | {} | undefined;
+  formatPayloadForSubmission(formGroup: FormGroup | any, fieldsToFormat: FormatFieldInput[]): any;
+  patchFormGroupValues(formGroup: FormGroup | any, data: any,
+                       mappedKeys?: MappedKeysInput[]): FormGroup | any;
+  markAllControlsAsTouched(form: FormGroup | any): void;
+  addFormControl(form: FormGroup | any, controlName: string,
+                 control: FormControl | any): void;
   removeFormControl(form: FormGroup, controlName: string): void;
 }
