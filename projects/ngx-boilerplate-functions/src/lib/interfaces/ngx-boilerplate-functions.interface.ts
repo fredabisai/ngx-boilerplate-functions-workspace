@@ -5,8 +5,6 @@ import {
   FormGroup,
   ValidatorFn
 } from "@angular/forms";
-// For Angular 14+ compatibility, you could declare these as optional types
-
 
 export interface IFormFieldInfo {
   name: string;
