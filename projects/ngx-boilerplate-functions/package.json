@@ -17,5 +17,12 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["es2015", "dom"]
+  },
   "sideEffects": false
 }
