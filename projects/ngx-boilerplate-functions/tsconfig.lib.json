@@ -1,18 +1,16 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../out-tsc/lib",
-    "declaration": true,
-    "declarationMap": true,
-    "inlineSources": true,
-    "types": []
-  },
-  "exclude": [
-    "**/*.spec.ts"
-  ],
-  "angularCompilerOptions": {
-    "enableIvy": false
-  }
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../../out-tsc/lib",
+		"declaration": true,
+		"declarationMap": true,
+		"inlineSources": true,
+		"types": [],
+		"module": "es2022",
+		"moduleResolution": "Node",
+		"esModuleInterop": true,
+    "target": "es2022",
+    "lib": ["es2022", "dom"]
+	},
+	"exclude": ["**/*.spec.ts"]
 }
