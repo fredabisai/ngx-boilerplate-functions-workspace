@@ -6,11 +6,9 @@
 		"declarationMap": true,
 		"inlineSources": true,
 		"types": [],
-		"module": "es2022",
-		"moduleResolution": "Node",
-		"esModuleInterop": true,
-    "target": "es2022",
-    "lib": ["es2022", "dom"]
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true
 	},
 	"exclude": ["**/*.spec.ts"]
 }
