@@ -2,27 +2,28 @@
   "name": "@ngx-boilerplate-functions/forms",
   "description": "@ngx-boilerplate-functions/forms is a utility package designed to simplify form handling in Angular applications. It provides helper functions for managing `FormGroup` and `FormControl` operations efficiently.",
   "license": "MIT",
+  "author": "Fredrick Abisai",
   "repository": {
     "type": "git",
     "url": "https://github.com/fredabisai/ngx-boilerplate-functions-workspace.git"
   },
   "private": false,
-  "types": "dist/index.d.ts",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" ,
-    "@angular/core": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "@angular/forms": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@angular/core": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@angular/forms": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "compilerOptions": {
-    "target": "es2020",
-    "lib": ["es2020", "dom"]
-  },
-  "sideEffects": false
+  "sideEffects": false,
+  "type": "module",
+  "main": "./fesm2022/ngx-boilerplate-functions-forms.mjs",
+  "module": "./esm2022/public-api.mjs",
+  "typings": "./esm2022/public-api.d.ts",
+  "exports": {
+    "import": "./esm2022/public-api.mjs",
+    "require": "./fesm2022/ngx-boilerplate-functions-forms.cjs"
+  }
 }
