@@ -1,6 +1,5 @@
 import {Injectable} from "@angular/core";
 import {
-  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -157,7 +156,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | any, controlName: string, match
        }
        formGroup.reset(defaultValuesToReset);
   }
-  getFormControlErrorMessage(control: FormControl  | AbstractControl<any> | any,
+  getFormControlErrorMessage(control: FormControl   | any,
                       errorType:  'required' | 'requiredTrue' | 'minLength' | 'maxLength' | 'pattern' | 'min' | 'max' | 'email'): any {
       if(!control) {
         return undefined;
@@ -166,7 +165,7 @@ checkIfFormControlsMatch( formGroup: FormGroup | any, controlName: string, match
         return control.getError(errorType);
       }
   }
-  isFormControlValidWithControlMark(control: FormControl | any | AbstractControl<any> | any, controlMarks: ('dirty' | 'pristine' | 'touched' | 'invalid')[]): boolean | undefined {
+  isFormControlValidWithControlMark(control: FormControl | any  , controlMarks: ('dirty' | 'pristine' | 'touched' | 'invalid')[]): boolean | undefined {
        if(!control || !controlMarks?.length) {
          return false;
        }
