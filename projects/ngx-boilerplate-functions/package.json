@@ -8,22 +8,16 @@
     "url": "https://github.com/fredabisai/ngx-boilerplate-functions-workspace.git"
   },
   "private": false,
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "keywords": ["angular", "forms", "reactive-forms", "typed-forms"],
   "peerDependencies": {
-    "@angular/common": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "@angular/core": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "@angular/forms": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+    "@angular/common": ">=19.0.0 <23.0.0",
+    "@angular/core": ">=19.0.0 <23.0.0",
+    "@angular/forms": ">=19.0.0 <23.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
   },
   "sideEffects": false,
-  "type": "module",
-  "main": "./fesm2022/ngx-boilerplate-functions-forms.mjs",
-  "module": "./esm2022/public-api.mjs",
-  "typings": "./esm2022/public-api.d.ts",
-  "exports": {
-    "import": "./esm2022/public-api.mjs",
-    "require": "./fesm2022/ngx-boilerplate-functions-forms.cjs"
-  }
+  "type": "module"
 }
