@@ -13,3 +13,5 @@ npm run pack:check
 ```
 
 See the [library README](./projects/ngx-boilerplate-functions/README.md) for installation, typed-form examples, the dynamic-form boundary, and migration guidance.
+
+Release automation and credential setup are documented in [`.github/RELEASING.md`](./.github/RELEASING.md).
