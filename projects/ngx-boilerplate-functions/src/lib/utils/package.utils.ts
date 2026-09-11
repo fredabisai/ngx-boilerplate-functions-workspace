@@ -1,85 +1,82 @@
-import {DatePipe} from "@angular/common";
+import {formatDate as angularFormatDate} from '@angular/common';
+
+export type Payload = Record<string, unknown>;
 
 export class PackageUtils {
-  private static datePipe: DatePipe;
-  constructor() {
+  private constructor() {}
+
+  static hasOwn(obj: object, key: PropertyKey): boolean {
+    return Object.prototype.hasOwnProperty.call(obj, key);
   }
-  // static isFormGroup(obj: any): obj is FormGroup {
-  //   return obj instanceof FormGroup;
-  // }
-  // static isUntypedFormGroup(obj: any): obj is UntypedFormGroup {
-  //   return obj instanceof UntypedFormGroup;
-  // }
-  // static isFormBuilder(obj: any): obj is FormBuilder {
-  //   return obj instanceof FormBuilder;
-  // }
-  // static isUntypedFormBuilder(obj: any): obj is UntypedFormBuilder {
-  //   return obj instanceof UntypedFormBuilder;
-  // }
-  // static isFormControl(obj: any): obj is FormControl {
-  //   return obj instanceof FormControl;
-  // }
-  // static isUntypedFormControl(obj: any): obj is UntypedFormControl {
-  //   return obj instanceof UntypedFormControl;
-  // }
-  static removeKeyFromObject(obj: any, key: string): any {
-    if(obj.hasOwnProperty(key)) {
-      const {[key]: [], ...newObj} = obj;
-      return newObj;
-    }
-    return obj;
+
+  static removeKeyFromObject(obj: Payload, key: string): Payload {
+    if (!this.hasOwn(obj, key)) return obj;
+    const {[key]: _removed, ...result} = obj;
+    return result;
   }
-  static convertToString(obj: any, name: string): any {
-    if(obj?.hasOwnProperty(name)) {
-      if (typeof obj[name] === 'string') {
-        obj[name] = obj[name];
-      } else if (typeof obj[name] === 'object') {
-        obj = {...obj, [name]: JSON.stringify(obj[name])};
-      } else {
-        obj = {...obj, [name]: `${obj[name]}`};
-      }
-    }
-    return obj;
+
+  static convertToString(obj: Payload, name: string): Payload {
+    if (!this.hasOwn(obj, name)) return obj;
+    const value = obj[name];
+    return {
+      ...obj,
+      [name]: typeof value === 'object' && value !== null
+        ? JSON.stringify(value)
+        : String(value),
+    };
   }
-  static formatDate(obj: any, name: string | undefined, format: string | undefined): any {
-    try {
-      if (obj?.hasOwnProperty(name) && name && format) {
-        obj = {...obj, [name]: this.datePipe.transform(obj[name], format)};
-      }
-      return obj;
-    } catch (e: any) {
-      throw new Error(`Unable to format date format :: ${e?.message}`);
+
+  static formatDate(
+    obj: Payload,
+    name: string,
+    format: string,
+    locale = 'en-US',
+  ): Payload {
+    if (!this.hasOwn(obj, name)) return obj;
+    const value = obj[name];
+    if (!(typeof value === 'string' || typeof value === 'number' || value instanceof Date)) {
+      throw new TypeError(`Field "${name}" is not a valid date input.`);
     }
+    return {...obj, [name]: angularFormatDate(value, format, locale)};
   }
-  static convertToNumber(obj: any, name: string) {
-    if(obj?.hasOwnProperty(name) && name && /\d/.test(obj[name])) {
-      obj = {...obj, [name]: parseInt(obj[name], 10)};
-    }
-    return obj;
+
+  static convertToNumber(obj: Payload, name: string): Payload {
+    return this.convertNumericValue(obj, name, false);
   }
-  static convertToFloat(obj: any, name: string) {
-    if(obj?.hasOwnProperty(name) && name && /\d/.test(obj[name])) {
-      obj = {...obj, [name]: parseFloat(obj[name])};
-    }
-    return obj;
+
+  static convertToFloat(obj: Payload, name: string): Payload {
+    return this.convertNumericValue(obj, name, true);
   }
-  static convertToBoolean(obj: any, name: string) {
-    if(obj?.hasOwnProperty(name) && name) {
-      if(typeof obj[name] === 'boolean') {
-        obj = {...obj, [name]: obj[name]};
-      } else if(obj[name]) {
-        obj = {...obj, [name]: true};
-      } else {
-        obj = {...obj, [name]: false};
-      }
+
+  static convertToBoolean(obj: Payload, name: string): Payload {
+    if (!this.hasOwn(obj, name)) return obj;
+    const value = obj[name];
+    if (typeof value === 'boolean') return obj;
+    if (value === 1 || value === '1' || value === 'true') return {...obj, [name]: true};
+    if (value === 0 || value === '0' || value === 'false' || value === '' || value === null) {
+      return {...obj, [name]: false};
     }
-    return obj;
+    throw new TypeError(`Field "${name}" cannot be converted to boolean.`);
   }
-  static addFieldToObject(obj: any, name: string, value: any): any {
-    if(!obj || !name || typeof obj !== 'object') {
-      return obj;
-    }
+
+  static addFieldToObject(obj: Payload, name: string, value: unknown): Payload {
     return {...obj, [name]: value};
   }
 
+  private static convertNumericValue(obj: Payload, name: string, allowDecimal: boolean): Payload {
+    if (!this.hasOwn(obj, name)) return obj;
+    const value = obj[name];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return allowDecimal || Number.isInteger(value) ? obj : {...obj, [name]: Math.trunc(value)};
+    }
+    if (typeof value !== 'string') {
+      throw new TypeError(`Field "${name}" cannot be converted to a number.`);
+    }
+    const normalized = value.trim();
+    const pattern = allowDecimal ? /^[+-]?(?:\d+\.?\d*|\.\d+)$/ : /^[+-]?\d+$/;
+    if (!pattern.test(normalized)) {
+      throw new TypeError(`Field "${name}" cannot be converted to a number.`);
+    }
+    return {...obj, [name]: Number(normalized)};
+  }
 }

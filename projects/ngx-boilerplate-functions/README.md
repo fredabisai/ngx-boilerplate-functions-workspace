@@ -1,816 +1,407 @@
 # @ngx-boilerplate-functions/forms
 
-## Overview
-**@ngx-boilerplate-functions/forms**  is a utility package designed to simplify form handling in Angular applications. It provides helper functions for managing `FormGroup` and `FormControl` operations efficiently.
+Type-safe helpers for Angular reactive forms. The package supports Angular 19–22. Typed forms retain control-name and value-type checking; runtime-defined heterogeneous forms use Angular's explicit `UntypedFormGroup` API.
 
 ## Installation
-
-To install the package, use npm or yarn:
 
 ```sh
 npm install @ngx-boilerplate-functions/forms
 ```
 
-or
+## Setup
+
+The service is provided in root and can be injected:
+
+```ts
+import {Component, inject} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
+import {FormsFunctionsService} from '@ngx-boilerplate-functions/forms';
+
+@Component({selector: 'app-account', template: ''})
+export class AccountComponent {
+  private readonly forms = inject(FormsFunctionsService);
+
+  readonly form = new FormGroup({
+    name: new FormControl('', {nonNullable: true}),
+    email: new FormControl('', {nonNullable: true}),
+    age: new FormControl(0, {nonNullable: true}),
+  });
+}
+```
+
+It can also be constructed directly in framework-independent tests:
+
+```ts
+const forms = new FormsFunctionsService();
+```
+
+## Typed and untyped forms
+
+Most methods accept both typed `FormGroup` and `UntypedFormGroup`. A typed form checks field names and values at compile time:
+
+```ts
+forms.patchValuesToFields(form, [
+  {name: 'name', value: 'Ada'},
+  {name: 'age', value: 36},
+]);
+
+// TypeScript errors:
+// {name: 'missing', value: 'x'}
+// {name: 'age', value: 'thirty-six'}
+```
+
+Methods that create or remove arbitrary heterogeneous controls—`initializeFormGroup`, `changeFormControlFields`, `addFormControl`, and `removeFormControl`—use `UntypedFormGroup` intentionally. When dynamic keys all share one control type, prefer Angular's typed `FormRecord`.
+
+## Complete service API
+
+### `setFormGroupValidations`
+
+Replaces synchronous validators on existing controls and immediately recalculates validity.
+
+```ts
+setFormGroupValidations(form, fields): void
+
+forms.setFormGroupValidations(form, [
+  {name: 'email', validations: [Validators.required, Validators.email]},
+]);
+```
+
+Typed forms restrict `name` to actual control names. An empty validator list is allowed and clears the composed validator through Angular's `setValidators([])` behavior.
+
+### `removeFormGroupValidations`
+
+Clears synchronous validators, optionally resets a field value, and can preserve selected manual error keys across validity recalculation.
+
+```ts
+removeFormGroupValidations(form, fields): void
+
+forms.removeFormGroupValidations(form, [
+  {
+    name: 'email',
+    defaultValue: '',
+    preserveErrors: ['server'],
+  },
+]);
+```
+
+`defaultValue` is checked against the typed control's value type. Async validators are not removed by this method.
+
+### `addAndRemoveFieldsOnSubmission`
+
+Creates a new payload from `form.value`, adds fields, and removes fields without changing the form.
+
+```ts
+const payload = forms.addAndRemoveFieldsOnSubmission(
+  form,
+  [{name: 'source', value: 'web'}],
+  ['confirmation'],
+);
+```
+
+Returns `Record<string, unknown>`. As with Angular's `form.value`, disabled controls are excluded. Use the form's `getRawValue()` yourself when disabled values must be included.
+
+### `disableFields`
+
+Disables existing controls. Angular's `onlySelf` and `emitEvent` options are supported.
+
+```ts
+forms.disableFields(form, [
+  {name: 'email', options: {emitEvent: false}},
+]);
+```
+
+### `patchValuesToFields`
+
+Patches individual controls. Typed forms verify both the control name and its value type.
+
+```ts
+forms.patchValuesToFields(form, [
+  {name: 'name', value: 'Grace'},
+  {name: 'age', value: 37},
+]);
+```
+
+An omitted, `undefined`, or `null` field value is patched as `null`. Prefer non-null values for non-nullable controls.
+
+### `changeFormControlFields`
+
+Adds and removes controls whose heterogeneous structure is known only at runtime. This method explicitly accepts `UntypedFormGroup`.
+
+```ts
+forms.changeFormControlFields(
+  dynamicForm,
+  [
+    {name: 'nickname', value: '', validations: [Validators.required]},
+    {name: 'active', value: true},
+  ],
+  [{name: 'oldField', emitEvent: false}],
+);
+```
+
+Existing controls are not replaced. Missing controls requested for removal are ignored.
+
+### `checkIfFormControlsMatch`
+
+Immediately compares two controls. It adds `mustMatch: true` to the matching control when values differ and removes only `mustMatch` when they become equal. Other errors are preserved.
+
+```ts
+forms.checkIfFormControlsMatch(form, 'password', 'confirmation');
+```
+
+This method is useful when the application intentionally controls when comparison happens. For automatic validation, use `fieldsMatch()`.
+
+### `initializeFormGroup`
+
+Builds an `UntypedFormGroup` from runtime field metadata.
+
+```ts
+const dynamicForm = forms.initializeFormGroup([
+  {name: 'username', value: '', validations: [Validators.required]},
+  {name: 'age', value: 18},
+]);
+```
+
+Call `initializeFormGroup()` with no argument to create an empty untyped group. Missing values default to `null`.
+
+### `resetFormGroup`
+
+Resets the whole form, then applies optional default values to named controls.
+
+```ts
+forms.resetFormGroup(form, [
+  {name: 'name', value: 'Anonymous'},
+  {name: 'age', value: 18},
+]);
+```
+
+Controls not listed use their normal Angular reset behavior. For non-nullable controls, that is their initial value.
+
+### `getFormControlError`
+
+Returns the raw value of any built-in or custom error, or `undefined` when the error is absent.
+
+```ts
+const serverError = forms.getFormControlError(form.controls.email, 'server');
+```
+
+Despite its name, this method returns error metadata rather than a human-readable message.
+
+### `getFormControlErrorMessage`
+
+Returns raw error metadata for a built-in Angular error name.
+
+```ts
+const requiredError = forms.getFormControlErrorMessage(
+  form.controls.email,
+  'required',
+);
+```
+
+Supported names are `required`, `requiredTrue`, `minlength`, `maxlength`, `pattern`, `min`, `max`, and `email`. This original API remains fully supported.
+
+### `hasControlMarks`
+
+Returns `true` only when every requested control-state property is currently true. An empty marks array returns `false`.
+
+```ts
+const showError = forms.hasControlMarks(
+  form.controls.email,
+  ['touched', 'invalid'],
+);
+```
+
+Supported marks are `dirty`, `pristine`, `touched`, `untouched`, `valid`, `invalid`, `pending`, `disabled`, and `enabled`.
+
+### `isFormControlValidWithControlMark`
+
+The original, fully supported name for the same behavior as `hasControlMarks`.
+
+```ts
+const showError = forms.isFormControlValidWithControlMark(
+  form.controls.email,
+  ['touched', 'invalid'],
+);
+```
+
+### `isFormGroupValid`
+
+Returns the form's current `valid` state.
+
+```ts
+if (forms.isFormGroupValid(form)) {
+  // Submit the form.
+}
+```
+
+### `getFormGroupErrorMessages`
+
+Returns a map of top-level control names to their current `ValidationErrors`.
+
+```ts
+const errors = forms.getFormGroupErrorMessages(form);
+// Example: {email: {required: true}}
+```
+
+Controls without errors are omitted. This method currently reports direct children only; it does not recursively flatten nested groups or arrays.
+
+### `formatPayloadForSubmission`
+
+Creates and transforms a copy of `form.value`. Formatting instructions form a discriminated union, so options required by `date` and `add` are compile-time checked.
+
+```ts
+const payload = forms.formatPayloadForSubmission(form, [
+  {name: 'age', formatType: 'number'},
+  {name: 'price', formatType: 'float'},
+  {name: 'active', formatType: 'boolean'},
+  {name: 'metadata', formatType: 'string'},
+  {
+    name: 'createdAt',
+    formatType: 'date',
+    dateFormat: 'yyyy-MM-dd',
+    locale: 'en-US',
+  },
+  {name: 'source', formatType: 'add', value: 'web'},
+  {name: 'confirmation', formatType: 'remove'},
+]);
+```
+
+Supported formats:
+
+- `string`: converts primitives with `String()` and objects with `JSON.stringify()`.
+- `number`: accepts complete integer strings or finite numbers.
+- `float`: accepts complete integer or decimal strings or finite numbers.
+- `boolean`: accepts booleans, `1`, `0`, and the strings `"true"`, `"false"`, `"1"`, `"0"`.
+- `date`: uses Angular's `formatDate`; `locale` defaults to `en-US`.
+- `add`: adds or replaces a payload field.
+- `remove`: removes a payload field.
+
+Invalid numeric, boolean, or date inputs throw `TypeError` rather than silently producing a corrupted payload.
+
+### `patchFormGroupValues`
+
+Patches a form from an object and optionally maps source property names to form-control names. Returns the same form instance.
+
+```ts
+forms.patchFormGroupValues(form, {
+  name: 'Lin',
+  email: 'lin@example.com',
+});
+
+forms.patchFormGroupValues(
+  form,
+  {display_name: 'Lin'},
+  [{name: 'name', mappedKey: 'display_name'}],
+);
+```
+
+When a mapped source property is absent, the destination is patched with `undefined`.
+
+### `markAllControlsAsTouched`
+
+Marks every control, including nested descendants, as touched by using Angular's `markAllAsTouched()`.
+
+```ts
+forms.markAllControlsAsTouched(form);
+```
+
+### `addFormControl`
+
+Adds a runtime-defined control to an `UntypedFormGroup`.
+
+```ts
+forms.addFormControl(
+  dynamicForm,
+  'nickname',
+  new FormControl<string | null>(null),
+);
+```
+
+For a statically typed group, use Angular's native `addControl()` with an optional key declared in the form's control model.
+
+### `removeFormControl`
+
+Removes a runtime-defined control from an `UntypedFormGroup`. Missing controls are ignored.
+
+```ts
+forms.removeFormControl(dynamicForm, 'nickname');
+```
+
+For a statically typed group, use Angular's native `removeControl()` with an optional key declared in the form's control model.
+
+## Validator API
+
+### `fieldsMatch`
+
+Returns an Angular group-level `ValidatorFn`. It automatically re-evaluates when either child control changes.
+
+```ts
+import {fieldsMatch} from '@ngx-boilerplate-functions/forms';
+
+const passwordForm = new FormGroup(
+  {
+    password: new FormControl('', {nonNullable: true}),
+    confirmation: new FormControl('', {nonNullable: true}),
+  },
+  {validators: fieldsMatch('password', 'confirmation')},
+);
+
+// When values differ:
+// passwordForm.errors === {
+//   fieldsMismatch: {first: 'password', second: 'confirmation'}
+// }
+```
+
+If either named control does not exist, the validator returns `null`.
+
+## Public types
+
+All of the following are exported from `@ngx-boilerplate-functions/forms`:
+
+| Type | Purpose |
+|---|---|
+| `IFormsFunctionsService` | Public service contract for abstractions, mocks, and test doubles. |
+| `IFormFieldInfo` | Backwards-compatible aggregate field description. Focused input types are preferred for new code. |
+| `FormControlMark` | Union of supported state properties for the mark-checking methods. |
+| `BuiltInValidationError` | Union of supported built-in error names. |
+| `FormFieldName<TForm>` | Extracts string control names from a typed form. |
+| `FormRawValue<TForm>` | Extracts the form's raw-value type. |
+| `ControlValue<TControl>` | Extracts a control's value type. |
+| `FormGroupValidationInput<TName>` | Input for assigning validators. |
+| `RemoveFormGroupValidationInput<TName>` | Base input for removing validators. |
+| `TypedRemoveValidationInput<TForm>` | Typed field name and default value for validator removal. |
+| `CommonFieldInput<TValue, TName>` | Generic name/value field description. |
+| `TypedCommonFieldInput<TForm>` | Name/value union derived from a typed form. |
+| `DisableFieldInput<TName>` | Field name plus Angular disable options. |
+| `InitializeFormGroupInput<TValue>` | Runtime control name, initial value, and validators. |
+| `RemoveControlInput` | Runtime control name plus `emitEvent`. |
+| `FormatFieldInput` | Discriminated payload-formatting instruction union. |
+| `MappedKeysInput<TName>` | Destination form name and source object key. |
+| `FormGroupErrorMessages` | `Record<string, ValidationErrors>`. |
+
+## Migration from 0.0.x
+
+- Replace imports from `ngx-form-boilerplate` with `@ngx-boilerplate-functions/forms`.
+- Replace `FormGroup | any` declarations with inferred or explicitly typed `FormGroup` models.
+- Call `initializeFormGroup(fields)` without a `FormBuilder` argument.
+- `getFormControlErrorMessage` and `isFormControlValidWithControlMark` remain supported; their shorter alternatives are optional.
+- `checkIfFormControlsMatch` remains supported; `fieldsMatch` is available for automatic validation.
+- Use `preserveErrors: ['server']` when selected manual errors must survive validator recalculation.
+
+No documented API has a planned removal version.
+
+## Development
+
+Use the Node version in `.nvmrc`, then run:
 
 ```sh
-yarn add @ngx-boilerplate-functions/forms
+nvm use
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm run pack:check
 ```
-
-## Usage
-
-### Importing in an Angular Service or Component
-
-```typescript
-import { FormBuilder, FormGroup, FormControl, ValidatorFn } from '@angular/forms';
-import { FormsFunctionsService } from 'ngx-form-boilerplate';
-```
-
-Inject the service into your component:
-
-```typescript
-constructor(private formService: FormsFunctionsService) {}
-```
-
-### Description of Properties
-- `name`: The field name (required).
-- `validations?`: An array of Angular validation functions.
-- `defaultValue?`: The default value of the field.
-- `value?`: The current value of the field.
-- `options?`: Additional options like `onlySelf` and `emitEvent`.
-- `formatType?`: Defines how the value should be formatted (`string`, `number`, `date`, etc.).
-- `dateFormat?`: Specifies a date format when `formatType` is set to `date`.
-- `mappedKey?`: Defines a different key for mapping data.
-
-
-
-## API Reference
-
-### 1. `initializeFormGroup`
-
-#### Description
-Initializes a `FormGroup` or `UntypedFormGroup` based on the provided fields.
-
-#### Parameters
-- `formBuilder: FormBuilder | UntypedFormBuilder` - The form builder instance.
-- `fields: InitializeFormGroupInput[]` - An array of field definitions.
-```typescript
-export type InitializeFormGroupInput = {
-  name: string;
-  value?: any;
-  validations?: ValidatorFn[];
-}
-```
-
-#### Returns
-`FormGroup | UntypedFormGroup | undefined` - The initialized form group.
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, InitializeFormGroupInput} from "@ngx-boilerplate-functions/forms";
-
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {}
-  initializeFormGroup() {
-    const fields: InitializeFormGroupInput[] = [
-      { name: 'username', value: '', validations: [Validators.required] },
-    ]
-    this.form = this.formService.initializeFormGroup(this.fb, fields);
-  }
-}
-```
-
----
-### 2. `resetFormGroup`
-
-#### Description
-Resets the form to its initial state or with provided default field values.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `defaultFields?: CommonFieldInput[]`
-```typescript
-export type CommonFieldInput = {
-  name: string;
-  value?: any;
-}
-```
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, CommonFieldInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      name: ['Donald Olmo', [Validators.required]],
-      address: ['Portland', [Validators.required]]
-    })
-  }
-  resetFormGroup() {
-    const defaultFields: CommonFieldInput[] = [
-      { name: 'name'},
-      { name: 'address', value: '-'}
-    ]
-    this.formService.resetFormGroup(this.form, defaultFields);
-    console.log(this.form.value)
-  }
-}
-```
-
----
-### 3. `checkIfFormControlsMatch`
-
-#### Description
-Validates if two form controls match (e.g., password confirmation).
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `controlName: string`
-- `matchingControlName: string`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: ['123456', [Validators.required]],
-      confirmPassword: ['654321', [Validators.required]]
-    })
-  }
-
-  checkIfFormControlsMatch() {
-    this.formService.checkIfFormControlsMatch(this.form, 'password', 'confirmPassword');
-    console.log(this.form.controls['confirmPassword'].errors)
-  }
-}
-```
-#### Result
-```typescript
-   { mustMatch: true }
-```
-
----
-### 4. `getFormControlErrorMessage`
-
-#### Description
-Retrieves error messages for a specific form control.
-
-#### Parameters
-- `control: FormControl | UntypedFormControl`
-- `errorType: 'required' | 'minLength' | 'maxLength' | 'pattern' | 'min' | 'max' | 'email'`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  getFormControlErrorMessage() {
-    const errorMessage = this.formService.getFormControlErrorMessage(this.form.get('email'), 'required');
-    console.log(errorMessage)
-  }
-}
-```
-
----
-### 5. `isFormGroupValid`
-
-#### Description
-Checks if the entire form group is valid.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-
-#### Returns
-`boolean`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  isFormControlValidWithControlMark(): boolean {
-    const isValid = this.formService.isFormGroupValid(this.form);
-    console.log(isValid)
-  }
-}
-```
-
----
-### 6. `markAllControlsAsTouched`
-
-#### Description
-Marks all form controls as touched.
-
-#### Parameters
-- `form: FormGroup | UntypedFormGroup`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  markAllControlsAsTouched() {
-    this.formService.markAllControlsAsTouched(this.form);
-    console.log(this.form.get('email')?.touched)
-  }
-}
-```
-#### Result
-```typescript
-true
-```
-
----
-### 7. `addFormControl`
-
-#### Description
-Dynamically adds a form control to an existing form group.
-
-#### Parameters
-- `form: FormGroup | UntypedFormGroup`
-- `controlName: string`
-- `control: FormControl | UntypedFormControl`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  addFormControl() {
-    this.formService.addFormControl(this.form, 'address', new FormControl('Dar es Salaam'));
-    console.log(this.form.contains('address'));
-    console.log(this.form.get('address').value);
-  }
-}
-```
-#### Result
-```text
- true
- Dar es Salaam
-```
-
----
-### 8. `removeFormControl`
-
-#### Description
-Removes a form control from the form group.
-
-#### Parameters
-- `form: FormGroup`
-- `controlName: string`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  removeFormControl() {
-    this.formService.removeFormControl(this.form, 'password');
-    console.log(this.form.contains('password'));
-  }
-}
-```
-#### Result
-```typescript
- false
-```
-
----
-### 9. `patchFormGroupValues`
-
-#### Description
-Patches values to a form group, optionally mapping field names using passed payload.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `data: any`
-- `mappedKeys?: MappedKeysInput[]`
-```typescript
-export type MappedKeysInput = {
-  name: string;
-  mappedKey?: string;
-}
-```
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, MappedKeysInput} from "@ngx-boilerplate-functions/forms";
-
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder) {
-    this.form = this.fb.group({
-      email: [null],
-      name: [null],
-      address: [null]
-    })
-  }
-
-  patchFormGroupValues() {
-    const data = {
-      myEmail: 'user@example.com',
-      name: 'New User',
-      address: 'Dar es Salaam'
-    }
-  
-    const mappedKeys: MappedKeysInput[] = [{name: 'email', mappedKey: 'myEmail'];
-    this.formService.patchFormGroupValues(this.form, data, mappedKeys);
-    console.log(this.form.value);
-  }
-}
-```
-#### Result
-```json
-  {
-  "email": "user@example.com",
-  "name": "New User",
-  "address": "Dar es Salaam"
-}
-```
-
-### 10. `setFormGroupValidations`
-
-#### Description
-Dynamically sets validation rules for form controls.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fields: FormGroupValidationInput[]`
-```typescript
-export type FormGroupValidationInput = {
-  name: string;
-  validations?: ValidatorFn[];
-}
-```
-
-#### Example
-
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, FormGroupValidationInput} from "@ngx-boilerplate-functions/forms";
-
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder) {
-    this.form = this.fb.group({
-      email: [null],
-      password: [null]
-    })
-  }
-
-  setFormGroupValidations() {
-    const fields: FormGroupValidationInput[] = [
-      {name: 'email', validations: [Validators.required, Validators.email]},
-      {name: 'password', validations: [Validators.required, Validators.minLength(6)]}
-    ]
-    this.formService.setFormGroupValidations(this.form, fields);
-  }
-}
-```
-
-### 11. `removeFormGroupValidations`
-
-#### Description
-Removes validations from specified form controls and resets their values to default or null.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fields: RemoveFormGroupValidationInput[]`
-```typescript
-export type RemoveFormGroupValidationInput = {
-  name: string;
-  defaultValue?: any;
-}
-```
-
-#### Example
-
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, RemoveFormGroupValidationInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]]
-    })
-  }
-
-  removeFormGroupValidations() {
-    const fields: RemoveFormGroupValidationInput[] = [
-      {name: 'email', defaultValue: 'user@example.com'},
-      {name: 'password'}
-    ]
-    this.formService.removeFormGroupValidations(this.form, fields);
-  }
-}
-```
-Field email will have a default value of user@example.com
-
-### 12. `addAndRemoveFieldsOnSubmission`
-
-#### Description
-Adds or removes specific fields in the form payload before submission.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToAdd: CommonFieldInput[]`
-- `fieldsToRemove: string[]`
-```typescript
-export type CommonFieldInput = {
-  name: string;
-  value?: any;
-}
-```
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, CommonFieldInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      name: ['Donald Olmo', [Validators.required]],
-      address: ['Portland', [Validators.required]]
-    })
-  }
-  addAndRemoveFieldsOnSubmission() {
-    const fieldsToAdd: CommonFieldInput[] = [{name: 'email', value: 'user@example.com'}]
-    const fieldsToRemove = ['address']
-    const updatedPayload = this.formService.addAndRemoveFieldsOnSubmission(this.form, fieldsToAdd, fieldsToRemove);
-    console.log(updatedPayload);
-  }
-}
-```
-
-#### Result
-```typescript
-   {
-    "name": "Donald Olmo", "email": "user@example.com"
-    }
-```
-### 13. `disableFields`
-
-#### Description
-Disable specified field in a FormGroup or UntypedFormGroup.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToDisable: DisableFieldInput[]`
-```typescript
-export type DisableFieldInput = {
-  name: string;
-  options?: { onlySelf?: boolean; emitEvent?: boolean;};
-}
-```
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, DisableFieldInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      name: ['Donald Olmo', [Validators.required]],
-      address: ['Portland', [Validators.required]]
-    })
-  }
-  disableFields() {
-    const fieldsToDisable: DisableFieldInput[] = [
-      { name: 'name'},
-      { name: 'address', options: { onlySelf: true, emitEvent: true }}
-    ]
-    this.formService.disableFields(this.form, fieldsToDisable);
-  }
-}
-```
-
-#### Result
-```typescript
-   {
-    "name": "Donald Olmo", "email": "user@example.com"
-    }
-```
-### 14. `patchValuesToFields`
-
-#### Description
-Set values to fields in the FormGroup / UntypedFormGroup.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToSet: CommonFieldInput[]`
-```typescript
-export type CommonFieldInput = {
-  name: string;
-  value?: any;
-}
-```
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, CommonFieldInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      name: [null, [Validators.required]],
-      address: [null, [Validators.required]]
-    })
-  }
-  patchValuesToFields() {
-    const fieldsToSet: CommonFieldInput[] = [{name: 'name', value: 'John Doe'}, 
-                                             {name: 'address', value: 'Dar es Salaam'}]
-    this.formService.patchValuesToFields(this.form, fieldsToSet);
-    console.log(this.form.value);
-  }
-}
-```
-#### Result
-```typescript
-   {
-    "name": "John Doe", "address": "Dar es Salaam"
-    }
-```
-### 15. `changeFormControlFields`
-
-#### Description
-Add or/and remove fields in the FormGroup / UntypedFormGroup.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToAdd: InitializeFormGroupInput[]`
-- `fieldsToRemove: {name: string, emitEvent?: boolean}[]`
-```typescript
-export type InitializeFormGroupInput = {
-  name: string;
-  value?: any;
-  validations?: ValidatorFn[];
-}
-```
----
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, InitializeFormGroupInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      name: [null, [Validators.required]],
-      address: [null, [Validators.required]]
-    })
-  }
-  changeFormControlFields() {
-    const fieldsToAdd: InitializeFormGroupInput[] = [{name: 'email', value: 'user@example.com', validations: [Validators.required]}, 
-                                             {name: 'address', value: 'Dar es Salaam'}]
-    const fieldsToRemove: {name: string, emitEvent?: boolean}[] = [{ name: 'address', emitEvent: true }]
-    this.formService.changeFormControlFields(this.form, fieldsToAdd, fieldsToRemove);
-    console.log(this.form.value);
-  }
-}
-```
----
-### 16. `isFormControlValidWithControlMark`
-
-#### Description
-Check form control is valid using control marks.
-
-#### Parameters
-- `control: FormControl | UntypedFormControl`
-- `controlMarks: ('dirty' | 'pristine' | 'touched' | 'invalid')[]`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  isFormControlValidWithControlMark(): boolean {
-    const isValid = this.formService.isFormControlValidWithControlMark(this.form.get('email'), ['dirty', 'pristine']);
-    console.log(isValid)
-  }
-}
-```
-
----
-
-### 17. `getFormGroupErrorMessages`
-
-#### Description
-Get error messages from FormGroup or UntypedFormGroup.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService } from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required]],
-    })
-  }
-
-  getFormGroupErrorMessages(): boolean {
-    const errors = this.formService.getFormGroupErrorMessages(this.form);
-    console.log(errors)
-  }
-}
-```
-#### Result
-```json
-  {
-    "email": ["Email is required", "Email should be valid email"],
-     "password": ["Password is required"]
-  }
-```
-
----
-
-### 18. `formatPayloadForSubmission`
-
-#### Description
-Formats to specified type or format, assigns value and removes specific fields in the form payload before submission.
-
-#### Parameters
-- `formGroup: FormGroup | UntypedFormGroup`
-- `fieldsToFormat: FormatFieldInput[]`
-```typescript
-export type FormatFieldInput = {
-  name: string;
-  formatType?:  'string' | 'number' | 'float' | 'boolean' | 'date' |  'remove' | 'add';
-  dateFormat?: string;
-  value?: any;
-}
-```
-
-#### Example
-```typescript
-import {UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {FormsFunctionsService, FormatFieldInput} from "@ngx-boilerplate-functions/forms";
-
-export class TestingComponent {
-  form: UntypedFormGroup;
-
-  constructor(private formService: FormsFunctionsService,
-              private fb: UntypedFormBuilder
-  ) {
-    this.form = this.fb.group({
-      name: ['Donald Olmo', [Validators.required]],
-      address: ['Portland', [Validators.required]],
-      year: [1990, [Validators.required]]
-    })
-  }
-  formatPayloadForSubmission() {
-    const fieldsToFormat: FormatFieldInput[] = [{name: 'year', formatType: 'string'}]
-    const updatedPayload = this.formService.formatPayloadForSubmission(this.form, fieldsToFormat);
-    console.log(updatedPayload);
-  }
-}
-```
-
-#### Result
-
-```json
-{
-  "name": "Donald Olmo",
-  "email": "user@example.com",
-  "year": "1990"
-}
-```
-
-## Contributing
-Feel free to submit issues or pull requests on GitHub to improve the package.
 
 ## License
-This package is released under the MIT License.
 
+MIT

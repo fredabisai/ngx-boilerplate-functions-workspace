@@ -4,12 +4,17 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build ngx-boilerplate-functions",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "jest --config projects/ngx-boilerplate-functions/jest.config.cjs --runInBand",
+    "typecheck": "tsc -p projects/ngx-boilerplate-functions/tsconfig.lib.json --noEmit && tsc -p projects/ngx-boilerplate-functions/tsconfig.spec.json --noEmit",
+    "pack:check": "npm pack --dry-run ./dist/ngx-boilerplate-functions"
   },
   "type": "module",
   "private": false,
+  "engines": {
+    "node": "^18.19.1 || ^20.11.1 || >=22.0.0"
+  },
   "dependencies": {
     "@angular/animations": "^19.2.4",
     "@angular/common": "^19.2.4",
